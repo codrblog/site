@@ -1,0 +1,21 @@
+{
+  "name": "codr.blog",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "dependencies": {
+    "@types/node": "^12.6.8",
+    "request": "^2.88.0",
+    "rxjs": "^6.5.2",
+    "typescript": "^3.5.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "npm run clean && tsc -p .",
+    "dev": "npm run clean && tsc -p . -w",
+    "clean": "rm -rf ./dist/"
+  },
+  "author": "",
+  "license": "ISC"
+}
