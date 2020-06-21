@@ -83,5 +83,5 @@ export class GitHub {
   }
 }
 
-// GitHub.listPosts('darlanalves').subscribe(s => console.log(s));
-GitHub.toHTML('## darlanalves').subscribe(s => console.log(s));
+GitHub.listPosts('darlanalves').subscribe(s => console.log(s));
+// GitHub.toHTML('## darlanalves').subscribe(s => console.log(s));

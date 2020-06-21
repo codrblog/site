@@ -6,6 +6,7 @@
   "private": true,
   "dependencies": {
     "@types/node": "^12.6.8",
+    "markdown-it": "^10.0.0",
     "request": "^2.88.0",
     "rxjs": "^6.5.2",
     "typescript": "^3.5.3"
@@ -14,7 +15,8 @@
   "scripts": {
     "build": "npm run clean && tsc -p .",
     "dev": "npm run clean && tsc -p . -w",
-    "clean": "rm -rf ./dist/"
+    "clean": "rm -rf ./dist/",
+    "start": ""
   },
   "author": "",
   "license": "ISC"
