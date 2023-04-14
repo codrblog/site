@@ -6,6 +6,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { Configuration, OpenAIApi } from 'openai';
 
 const apiKey = String(process.env.API_KEY);
+const useCache = !Boolean(process.env.NO_CACHE);
 const configuration = new Configuration({ apiKey });
 const openai = new OpenAIApi(configuration);
 const index = readFileSync('./index.html', 'utf8');
@@ -37,7 +38,7 @@ async function serve(req, res) {
     const hash = sha256(urlPath);
     const cachePath = join(CWD, 'cache', hash);
 
-    if (existsSync(cachePath)) {
+    if (useCache && existsSync(cachePath)) {
         const cached = readFileSync(cachePath, 'utf8');
         res.end(cached);
         return;
