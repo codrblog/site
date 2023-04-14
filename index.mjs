@@ -14,6 +14,7 @@ const CWD = process.cwd();
 const recents = [];
 
 async function serve(req, res) {
+    console.log(req.url)
     if (req.url === '/') {
         res.end(index
             .replace('{content}', '<h1 class="text-3xl font-bold mb-6">Start your search here</h1>')
@@ -46,6 +47,7 @@ async function serve(req, res) {
 
     const article = await generate(urlPath);
     const newContent = `<!-- ${urlPath} -->\n\n${article}`;
+    console.log(article);
  
     if (useCache) {
         writeFileSync(cachePath, newContent);
