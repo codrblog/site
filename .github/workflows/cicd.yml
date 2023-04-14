@@ -1,0 +1,11 @@
+on:
+  - push
+
+jobs:
+  build:
+    uses: cloud-cli/workflows/.github/workflows/docker-ghcr-build.yml@main
+    with:
+      name: codrblog/site
+      baseImage: cloud-cli/node:latest
+      defaultBranch: main
+      type: node

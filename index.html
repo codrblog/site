@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.0.3/tailwind.min.css"
+        integrity="sha512-jytZHu0mZ/HjS0mMYv/BjirGdyiX9Ua4L4j+jcwUfynZHLNbgyPfaNHbptoz8TfTMBNGsFaLVO/OXsBSeHE8zg=="
+        crossorigin="anonymous" />
+    <script>
+        function search() {
+            const query = document.querySelector('#search').value;
+            window.location.href = encodeURI(query.toLowerCase().trim().split(/\W/).filter(Boolean).join('_'));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const recents = document.querySelector('aside ul');
+            const items = [...recents.children];
+
+            recents.innerHTML = items.map(li => li.innerHTML.anchor(li.innerHTML)).join('');
+            document.querySelector('header form').addEventListener('submit', (event) => { event.preventDefault(); search(); });
+        });
+    </script>
+</head>
+
+<body class="bg-gray-100">
+    <header class="bg-white p-10 flex justify-between items-center shadow-lg">
+        <h1 class="text-3xl font-semibold text-gray-900">CODR.blog - All things coding</h1>
+        <form>
+            <label for="search" class="sr-only">Search</label>
+            <input name="search" id="search" type="text" class="border border-gray-400 py-2 px-4 rounded-md"
+                placeholder="Search...">
+        </form>
+    </header>
+
+    <main class="max-w-5xl mx-auto my-10 px-6 md:px-0">
+        <article class="prose lg:prose-xl mx-auto">{content}</article>
+    </main>
+    <aside>
+        <h2>Recent searches</h2>
+        <ul>{recents}</ul>
+    </aside>
+</body>
+
+</html>
