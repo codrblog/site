@@ -47,7 +47,9 @@ async function serve(req, res) {
     const article = await generate(urlPath);
     const newContent = `<!-- ${urlPath} -->\n\n${article}`;
  
-    writeFileSync(cachePath, newContent);
+    if (useCache) {
+        writeFileSync(cachePath, newContent);
+    }
     
     res.end(index
         .replace('{title}', urlPath)
