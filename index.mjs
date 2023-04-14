@@ -17,6 +17,7 @@ async function serve(req, res) {
         res.end(index
             .replace('{content}', '<h1 class="text-3xl font-bold mb-6">Start your search here</h1>')
             .replace('{recents}', generateRecents())
+            .replace('{title}', 'CODR.blog')
         );
         return;
     }
@@ -48,6 +49,7 @@ async function serve(req, res) {
     writeFileSync(cachePath, newContent);
     
     res.end(index
+        .replace('{title}', urlPath)
         .replace('{content}', newContent)
         .replace('{recents}', generateRecents())
     );
