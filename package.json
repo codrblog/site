@@ -3,8 +3,11 @@
   "version": "0.0.0",
   "main": "./index.mjs",
   "scripts": {
-    "ci": "echo true"
+    "ci": "npm i"
   },
   "private": true,
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "openai": "^3.2.1"
+  }
 }

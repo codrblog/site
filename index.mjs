@@ -3,7 +3,11 @@ import { request } from 'https';
 import { join } from 'path';
 import { createHash } from 'crypto';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { Configuration, OpenAIApi } from 'openai';
 
+const apiKey = String(process.env.API_KEY);
+const configuration = new Configuration({ apiKey });
+const openai = new OpenAIApi(configuration);
 const completionsURL = process.env.COMPLETIONS_URL;
 const index = readFileSync('./index.html', 'utf8');
 const CWD = process.cwd();
@@ -59,15 +63,15 @@ Add relative href links in the content that point to related topics or tags.
 Use semantic and SEO optimized markup and format it using Tailwind typography styles.
 Generate only the content, not the HTML page around it.
 At the end of the article, provide a list with links related to the current page and the sources from where the article was generated`
-    const payload = { messages: [{ role: 'user', content: prompt }]}
-    const options = { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+    const options = {
+        model: 'gpt-3.5-turbo',
+        messages: [{ role: 'user', content: prompt }],
     };
-
-    const completion = await fetch(completionsURL, options).then((x) => x.json());
-    return completion.content;
+    
+    const completion = await openai.createChatCompletion(options);
+    const responses = completion.data.choices.map((c) => c.message.content).join('\n');
+    
+    return responses;
 }
 
 createServer(serve).listen(process.env.PORT);
