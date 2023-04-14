@@ -8,7 +8,6 @@ import { Configuration, OpenAIApi } from 'openai';
 const apiKey = String(process.env.API_KEY);
 const configuration = new Configuration({ apiKey });
 const openai = new OpenAIApi(configuration);
-const completionsURL = process.env.COMPLETIONS_URL;
 const index = readFileSync('./index.html', 'utf8');
 const CWD = process.cwd();
 const recents = [];
@@ -19,6 +18,11 @@ async function serve(req, res) {
             .replace('{content}', '<h1 class="text-3xl font-bold mb-6">Start your search here</h1>')
             .replace('{recents}', generateRecents())
         );
+        return;
+    }
+
+    if (req.url === '/@recents') {
+        res.end(recents.join('\n'));
         return;
     }
 
