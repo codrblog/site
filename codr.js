@@ -10,6 +10,11 @@ function onLoad() {
   article.innerHTML = "";
   article.append(document.querySelector("#content").content);
 
+  const title = article.querySelector("h1");
+  if (title) {
+    window.title = title.textContent.trim();
+  }
+
   document.querySelector("header form").addEventListener("submit", (event) => {
     event.preventDefault();
     search();

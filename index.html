@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title></title>
+    <title>CODR</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
@@ -13,10 +13,10 @@
 
   <body class="bg-gray-100">
     <header
-      class="bg-white px-4 py-2 flex flex-wrap justify-between items-center shadow-lg"
+      class="fixed bg-white px-4 py-2 md:flex flex-wrap md:justify-between items-center shadow-lg"
     >
-      <h1 class="text-2xl font-semibold text-gray-900">
-        CODR.blog - All things coding
+      <h1 class="text-2xl font-semibold text-gray-900 mb-2 md:mb-0">
+        CODR - The infinite coding blog
       </h1>
       <form class="flex" action="/" method="get">
         <label for="search" class="sr-only">Search</label>
@@ -24,7 +24,7 @@
           name="search"
           id="search"
           type="text"
-          class="leading-4 border border-gray-400 py-2 px-4 rounded-l"
+          class="leading-4 border border-gray-400 py-2 px-4 rounded-l w-full"
           placeholder="Search..."
         />
         <button
@@ -66,3 +66,5 @@
       <h2>Recent searches</h2>
       <ul></ul>
     </aside>
+  </body>
+</html>

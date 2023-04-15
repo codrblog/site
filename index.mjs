@@ -40,7 +40,9 @@ async function serve(req, res) {
 
   console.log(req.url);
   const urlPath = req.url;
-  recents.unshift(urlPath);
+  if (!recents.includes(urlPath)) {
+    recents.unshift(urlPath);
+  }
 
   if (recents.length > 100) {
     recents.pop();
