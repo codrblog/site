@@ -3,7 +3,7 @@ function search() {
     window.location.href = encodeURI(query.toLowerCase().trim().split(/\W/).filter(Boolean).join('_'));
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+function onLoad() {
     document.querySelector('main article').append(document.querySelector('#content').content);
     document.querySelector('header form').addEventListener('submit', (event) => { event.preventDefault(); search(); });
 
@@ -11,4 +11,10 @@ window.addEventListener('DOMContentLoaded', () => {
         const recents = document.querySelector('aside ul');
         recents.innerHTML = list.map(link => '<li>' + link.anchor(link) + '</li>');
     });
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onLoad);
+  } else {
+    setTimeout(onLoad);
+  }
