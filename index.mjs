@@ -5,22 +5,25 @@ import { createHash } from 'crypto';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { Configuration, OpenAIApi } from 'openai';
 
+const CWD = process.cwd();
 const apiKey = String(process.env.API_KEY);
 const useCache = !Boolean(process.env.NO_CACHE);
 const configuration = new Configuration({ apiKey });
 const openai = new OpenAIApi(configuration);
 const index = readFileSync('./index.html', 'utf8');
-const CWD = process.cwd();
+const script = readFileSync('./codr.js', 'utf8');
 const recents = [];
+const pageEnd = '</body></html>';
 
 async function serve(req, res) {
-    console.log(req.url)
+    console.log(req.url);
+
     if (req.url === '/') {
-        res.end(index
-            .replace('{content}', '<h1 class="text-3xl font-bold mb-6">Start your search here</h1>')
-            .replace('{recents}', generateRecents())
-            .replace('{title}', 'CODR.blog')
-        );
+        return renderContent(res, '<h1 class="text-3xl my-10 font-bold mb-6">I know anything. Start your search above!</h1>');
+    }
+
+    if (req.url === '/codr.js') {
+        res.end(script);
         return;
     }
 
@@ -35,40 +38,24 @@ async function serve(req, res) {
     if (recents.length > 100) {
         recents.pop();
     }
-
-    const hash = sha256(urlPath);
-    const cachePath = join(CWD, 'cache', hash);
-
-    if (useCache && existsSync(cachePath)) {
-        const cached = readFileSync(cachePath, 'utf8');
-        res.end(cached);
-        return;
-    }
-
-    const article = await generate(urlPath);
-    const newContent = `<!-- ${urlPath} -->\n\n${article}`;
-
-
-    if (useCache) {
-        writeFileSync(cachePath, newContent);
-    }
     
-    res.end(index
-        .replace('{title}', urlPath)
-        .replace('{content}', newContent)
-        .replace('{recents}', generateRecents())
-    );
+    renderContent(res, generate(urlPath));
 }
 
-function sha256(value) {
-    return createHash('sha256').update(value).digest('hex');
-}
-
-function generateRecents() {
-    return recents.map(next => `<li>${next}</li>`);
+async function renderContent(res, content) {
+    res.write(index);
+    const html = await content;
+    res.end(`<template id="content">${html}</template>${pageEnd}`);
 }
 
 async function generate(urlPath) {
+    const hash = sha256(urlPath);
+    const cachePath = join(CWD, 'cache', hash);
+    
+    if (useCache && existsSync(cachePath)) {
+        return readFileSync(cachePath, 'utf8');
+    }
+
     const prompt = `Create an HTML article that matches the following URL path: "${urlPath}".
 Add relative href links in the content that point to related topics or tags.
 Use semantic and SEO optimized markup and format it using Tailwind typography styles.
@@ -82,7 +69,17 @@ At the end of the article, provide a list with links related to the current page
     const completion = await openai.createChatCompletion(options);
     const responses = completion.data.choices.map((c) => c.message.content).join('\n');
     
-    return responses;
+    const article = `<!-- ${urlPath} -->\n\n${responses}`;
+
+    if (useCache) {
+        writeFileSync(cachePath, article);
+    }
+
+    return article;
 }
 
 createServer(serve).listen(process.env.PORT);
+
+function sha256(value) {
+    return createHash('sha256').update(value).digest('hex');
+}
