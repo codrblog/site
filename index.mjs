@@ -35,7 +35,7 @@ async function serve(req, res) {
   }
 
   if (req.url === "/@recents") {
-    res.end(recents.join("\n"));
+    res.end(JSON.stringify(recents));
     return;
   }
 
