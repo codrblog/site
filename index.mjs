@@ -1,5 +1,4 @@
 import { createServer } from "http";
-import { request } from "https";
 import { join } from "path";
 import { createHash } from "crypto";
 import { readFileSync, writeFileSync, existsSync } from "fs";
