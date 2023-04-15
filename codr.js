@@ -8,7 +8,9 @@ function search() {
 function onLoad() {
   const article = document.querySelector("main article");
   article.innerHTML = "";
-  article.append(document.querySelector("#content").content);
+  const template = document.querySelector("#content")
+  article.append(template.content);
+  template.remove();
 
   const title = article.querySelector("h1");
   if (title) {
@@ -31,8 +33,10 @@ function onLoad() {
         const text = link.replace(underscore, " ");
         const li = document.createElement("li");
         const anchor = document.createElement("a");
+        li.append(anchor);
         anchor.href = link;
         anchor.innerText = text;
+        anchor.className = 'class="block px-4 py-2 border border-blue-200 rounded hover:border-blue-300"'
         frag.append(li);
       });
 
