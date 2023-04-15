@@ -47,8 +47,8 @@ async function serve(req, res) {
 
     const article = await generate(urlPath);
     const newContent = `<!-- ${urlPath} -->\n\n${article}`;
-    console.log(article);
- 
+
+
     if (useCache) {
         writeFileSync(cachePath, newContent);
     }
@@ -72,7 +72,7 @@ async function generate(urlPath) {
     const prompt = `Create an HTML article that matches the following URL path: "${urlPath}".
 Add relative href links in the content that point to related topics or tags.
 Use semantic and SEO optimized markup and format it using Tailwind typography styles.
-Generate only the content, not the HTML page around it.
+Generate only the content, not the HTML page around it and be very brief about the content, but show coding blocks if needed.
 At the end of the article, provide a list with links related to the current page and the sources from where the article was generated`
     const options = {
         model: 'gpt-3.5-turbo',
