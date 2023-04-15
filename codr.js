@@ -4,7 +4,9 @@ function search() {
 }
 
 function onLoad() {
-    document.querySelector('main article').append(document.querySelector('#content').content);
+    const article = document.querySelector('main article');
+    article.innerHTML = '';
+    article.append(document.querySelector('#content').content);
     document.querySelector('header form').addEventListener('submit', (event) => { event.preventDefault(); search(); });
 
     fetch('/@recents').then(x => x.json()).then(list => {
