@@ -35,7 +35,8 @@ async function serve(req, res) {
   }
 
   if (req.url === "/@index") {
-    const cacheList = spawnSync("head", ["-n1", "cache/*"]);
+    const cacheList = spawnSync("head", ["-n1", join(CWD, "cache", "*")]);
+    console.log(cacheList.stdout || cacheList.output);
     const list = String(cacheList.stdout || cacheList.output);
     const lines = list
       .trim()
