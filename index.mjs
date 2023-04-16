@@ -35,7 +35,7 @@ async function serve(req, res) {
   }
 
   if (req.url === "/@index") {
-    const list = String(spawnSync('tail -n 1 cache/*').output);
+    const list = String(spawnSync('tail -n 1 cache/*').stdout);
     res.end(JSON.stringify(list.trim().split('\n').filter(Boolean)));
     return;
   }
