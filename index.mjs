@@ -1,8 +1,9 @@
 import { createServer } from "http";
 import { join } from "path";
 import { createHash } from "crypto";
-import { readFileSync, writeFileSync, existsSync, unlinkSync } from "fs";
+import { readFileSync, writeFileSync, existsSync } from "fs";
 import { Configuration, OpenAIApi } from "openai";
+import { spawnSync } from "child_process";
 
 const CWD = process.cwd();
 const apiKey = String(process.env.API_KEY);
@@ -30,6 +31,12 @@ async function serve(req, res) {
 
   if (req.url === "/codr.js") {
     res.end(script);
+    return;
+  }
+
+  if (req.url === "/@index") {
+    const list = String(spawnSync('tail -n 1 cache/*').output);
+    res.end(JSON.stringify(list.trim().split('\n').filter(Boolean)));
     return;
   }
 
