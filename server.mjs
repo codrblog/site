@@ -1,7 +1,13 @@
 import { createServer } from "http";
 import { join } from "path";
 import { createHash } from "crypto";
-import { readFileSync, writeFileSync, existsSync, createReadStream } from "fs";
+import {
+  readFileSync,
+  writeFileSync,
+  existsSync,
+  createReadStream,
+  readdir,
+} from "fs";
 import { Configuration, OpenAIApi } from "openai";
 import { spawnSync } from "child_process";
 
@@ -14,7 +20,7 @@ const index = readFileSync("./index.html", "utf8");
 const searchForm = readFileSync("./search.html", "utf8");
 const script = readFileSync("./codr.js", "utf8");
 const recents = [];
-const pageEnd = "</body></html>";
+const assets = readdir(join(PwD, "assets"));
 
 async function serve(req, res) {
   if (req.url === "/favicon.ico") {
@@ -23,8 +29,8 @@ async function serve(req, res) {
     return;
   }
 
-  if (req.url === "/favicon.png" || req.url === "/icon.png") {
-    createReadStream(join(PWD, "assets", req.url)).pipe(res);
+  if (assets.includes(req.url.slice(1))) {
+    createReadStream(join(PWD, "assets", req.url.slice(1))).pipe(res);
     return;
   }
 
@@ -93,9 +99,9 @@ async function renderContent(res, content) {
 
   try {
     const html = await content;
-    res.end(`<template id="content">${html}</template>${pageEnd}`);
+    res.end(`<template id="content">${html}</template>`);
   } catch (_e) {
-    res.end('<template id="content">Failed to load article</template>');
+    res.end('<template id="content">Failed to load article :(</template>');
   }
 }
 

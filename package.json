@@ -1,7 +1,7 @@
 {
   "name": "codr.blog",
   "version": "0.0.0",
-  "main": "./index.mjs",
+  "main": "./server.mjs",
   "scripts": {
     "ci": "npm i"
   },

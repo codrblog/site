@@ -30,7 +30,7 @@ function createLinksFromList(list) {
   const frag = document.createDocumentFragment();
 
   list.forEach((link) => {
-    const text = link.slice(1).replace(underscore, " ");
+    const text = link.replace(underscore, " ");
     const li = document.createElement("li");
     const anchor = document.createElement("a");
     li.append(anchor);
