@@ -30,12 +30,12 @@ function createLinksFromList(list) {
   const frag = document.createDocumentFragment();
 
   list.forEach((link) => {
-    const text = link.replace(underscore, " ");
+    const text = link.slice(1).replace(underscore, " ");
     const li = document.createElement("li");
     const anchor = document.createElement("a");
     li.append(anchor);
     anchor.href = link;
-    anchor.innerText = text.slice(1);
+    anchor.innerText = text;
     anchor.className =
       'class="block px-4 py-2 border border-blue-200 rounded hover:border-blue-300"';
     frag.append(li);

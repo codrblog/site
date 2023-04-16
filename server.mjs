@@ -12,15 +12,18 @@ import { Configuration, OpenAIApi } from "openai";
 import { spawnSync } from "child_process";
 
 const CWD = process.cwd();
+const model = String(process.env.API_MODEL);
 const apiKey = String(process.env.API_KEY);
 const useCache = !Boolean(process.env.NO_CACHE);
 const configuration = new Configuration({ apiKey });
 const openai = new OpenAIApi(configuration);
+
 const index = readFileSync("./index.html", "utf8");
 const searchForm = readFileSync("./search.html", "utf8");
 const script = readFileSync("./codr.js", "utf8");
-const recents = [];
+const promptText = readFileSync("./prompt.txt", "utf8");
 const assets = readdirSync(join(CWD, "assets"));
+const recents = [];
 
 async function serve(req, res) {
   if (req.url === "/favicon.ico") {
@@ -43,6 +46,7 @@ async function serve(req, res) {
     return;
   }
 
+  
   if (req.url === "/@index") {
     const cacheList = spawnSync("head", ["-n1", join(CWD, "cache", "*")]);
     console.log(cacheList.stdout || cacheList.output);
@@ -121,19 +125,14 @@ async function generate(urlPath, suggestion) {
     return readFileSync(cachePath, "utf8");
   }
 
-  let prompt = `Create an HTML article that matches the following URL path: "${urlPath}".
-Add relative href links in the content that point to related topics or tags.
-Use semantic and SEO optimized markup and format it using Tailwind typography styles.
-Generate only the content, not the HTML page around it and be very brief about the content, but show coding blocks if needed.
-At the end of the article, provide a list with links related to the current page and the sources from where the article was generated
-`;
+  let prompt = promptText.replace("{urlPath}", urlPath);
 
   if (suggestion) {
     prompt += "Consider this suggestion for an improved content: " + suggestion;
   }
 
   const options = {
-    model: "gpt-3.5-turbo",
+    model,
     messages: [{ role: "user", content: prompt }],
   };
 

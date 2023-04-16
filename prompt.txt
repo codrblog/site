@@ -1,0 +1,6 @@
+Create an HTML article that matches the following URL path: "{urlPath}".
+Add relative href links in the content that point to related topics or tags.
+Use semantic and SEO optimized markup and format it using Tailwind typography styles.
+Generate only the content, not the HTML page around.
+Don't explain too much, but show coding blocks if needed.
+At the end of the article, provide a list with links related to the current page and the sources from where the article was generated.
