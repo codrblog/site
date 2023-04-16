@@ -20,7 +20,7 @@ const index = readFileSync("./index.html", "utf8");
 const searchForm = readFileSync("./search.html", "utf8");
 const script = readFileSync("./codr.js", "utf8");
 const recents = [];
-const assets = readdir(join(PwD, "assets"));
+const assets = readdir(join(PWD, "assets"));
 
 async function serve(req, res) {
   if (req.url === "/favicon.ico") {
