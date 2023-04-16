@@ -6,7 +6,7 @@ import {
   writeFileSync,
   existsSync,
   createReadStream,
-  readdir,
+  readdirSync,
 } from "fs";
 import { Configuration, OpenAIApi } from "openai";
 import { spawnSync } from "child_process";
@@ -20,7 +20,7 @@ const index = readFileSync("./index.html", "utf8");
 const searchForm = readFileSync("./search.html", "utf8");
 const script = readFileSync("./codr.js", "utf8");
 const recents = [];
-const assets = readdir(join(CWD, "assets"));
+const assets = readdirSync(join(CWD, "assets"));
 
 async function serve(req, res) {
   if (req.url === "/favicon.ico") {
