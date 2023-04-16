@@ -1,7 +1,7 @@
 import { createServer } from "http";
 import { join } from "path";
 import { createHash } from "crypto";
-import { readFileSync, writeFileSync, existsSync } from "fs";
+import { readFileSync, writeFileSync, existsSync, unlinkSync } from "fs";
 import { Configuration, OpenAIApi } from "openai";
 
 const CWD = process.cwd();
@@ -38,6 +38,25 @@ async function serve(req, res) {
     return;
   }
 
+  if (req.url.startsWith("/@suggestion")) {
+    if (!useCache) {
+      res.writeHead(201);
+      res.end();
+      return;
+    }
+
+    const suggestion = await readBody(req);
+    const suggestionPath = req.url.replace("/@suggestion", "");
+
+    if (!suggestionPath) {
+      req.writeHead(400);
+    }
+
+    res.end();
+    generate(suggestionPath, suggestion);
+    return;
+  }
+
   console.log(req.url);
   const urlPath = req.url;
   if (!recents.includes(urlPath)) {
@@ -62,19 +81,33 @@ async function renderContent(res, content) {
   }
 }
 
-async function generate(urlPath) {
+async function readBody(request) {
+  return new Promise((resolve) => {
+    const chunks = [];
+    request.on("data", (c) => chunks.push(c));
+    request.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+  });
+}
+
+async function generate(urlPath, suggestion) {
   const hash = sha256(urlPath);
   const cachePath = join(CWD, "cache", hash);
 
-  if (useCache && existsSync(cachePath)) {
+  if (useCache && existsSync(cachePath) && !suggestion) {
     return readFileSync(cachePath, "utf8");
   }
 
-  const prompt = `Create an HTML article that matches the following URL path: "${urlPath}".
+  let prompt = `Create an HTML article that matches the following URL path: "${urlPath}".
 Add relative href links in the content that point to related topics or tags.
 Use semantic and SEO optimized markup and format it using Tailwind typography styles.
 Generate only the content, not the HTML page around it and be very brief about the content, but show coding blocks if needed.
-At the end of the article, provide a list with links related to the current page and the sources from where the article was generated`;
+At the end of the article, provide a list with links related to the current page and the sources from where the article was generated
+`;
+
+  if (suggestion) {
+    prompt += "Consider this suggestion for an improved content: " + suggestion;
+  }
+
   const options = {
     model: "gpt-3.5-turbo",
     messages: [{ role: "user", content: prompt }],
