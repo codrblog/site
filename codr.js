@@ -23,6 +23,10 @@ function onLoad() {
       const recents = document.querySelector("aside ul");
       recents.append(createLinksFromList(list));
     });
+
+  if (isHomePage) {
+    document.querySelector("article form").addEventListener("submit", search);
+  }
 }
 
 function createLinksFromList(list) {
@@ -40,6 +44,7 @@ function createLinksFromList(list) {
       'class="block px-4 py-2 border border-blue-200 rounded hover:border-blue-300"';
     frag.append(li);
   });
+
   return frag;
 }
 
