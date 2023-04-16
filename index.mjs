@@ -1,7 +1,7 @@
 import { createServer } from "http";
 import { join } from "path";
 import { createHash } from "crypto";
-import { readFileSync, writeFileSync, existsSync } from "fs";
+import { readFileSync, writeFileSync, existsSync, createReadStream } from "fs";
 import { Configuration, OpenAIApi } from "openai";
 import { spawnSync } from "child_process";
 
@@ -11,6 +11,7 @@ const useCache = !Boolean(process.env.NO_CACHE);
 const configuration = new Configuration({ apiKey });
 const openai = new OpenAIApi(configuration);
 const index = readFileSync("./index.html", "utf8");
+const searchForm = readFileSync("./search.html", "utf8");
 const script = readFileSync("./codr.js", "utf8");
 const recents = [];
 const pageEnd = "</body></html>";
@@ -22,11 +23,13 @@ async function serve(req, res) {
     return;
   }
 
+  if (req.url === "/favicon.png" || req.url === "/icon.png") {
+    createReadStream(join(PWD, "assets", req.url)).pipe(res);
+    return;
+  }
+
   if (req.url === "/") {
-    return renderContent(
-      res,
-      '<h1 class="text-3xl my-10 font-bold mb-6">I know anything. Start your search above!</h1>'
-    );
+    return renderContent(res, searchForm);
   }
 
   if (req.url === "/codr.js") {

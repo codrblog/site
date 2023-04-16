@@ -1,14 +1,53 @@
-function search() {
-  const query = document.querySelector("#search").value;
+function search(event) {
+  event.preventDefault();
+  const query = event.target.querySelector("input").value;
+
   window.location.href = encodeURI(
     query.toLowerCase().trim().split(/\W/).filter(Boolean).join("_")
   );
 }
 
 function onLoad() {
+  showArticleContent();
+  const isHomePage = location.pathname === "/";
+  const headerForm = document.querySelector("header form");
+
+  headerForm.addEventListener("submit", search);
+  if (!isHomePage) {
+    headerForm.classList.remove("hidden");
+  }
+
+  fetch(isHomePage ? "/@index" : "/@recents")
+    .then((x) => x.json())
+    .then((list) => {
+      const recents = document.querySelector("aside ul");
+      recents.append(createLinksFromList(list));
+    });
+}
+
+function createLinksFromList(list) {
+  const underscore = /_/g;
+  const frag = document.createDocumentFragment();
+
+  list.forEach((link) => {
+    const text = link.slice(1).replace(underscore, " ");
+    const li = document.createElement("li");
+    const anchor = document.createElement("a");
+    li.append(anchor);
+    anchor.href = link;
+    anchor.innerText = text.slice(1);
+    anchor.className =
+      'class="block px-4 py-2 border border-blue-200 rounded hover:border-blue-300"';
+    frag.append(li);
+  });
+  return frag;
+}
+
+function showArticleContent() {
   const article = document.querySelector("main article");
-  article.innerHTML = "";
   const template = document.querySelector("#content");
+
+  article.innerHTML = "";
   article.append(template.content);
   template.remove();
 
@@ -16,35 +55,6 @@ function onLoad() {
   if (title) {
     window.title = title.textContent.trim();
   }
-
-  document.querySelector("header form").addEventListener("submit", (event) => {
-    event.preventDefault();
-    search();
-  });
-
-  const isHomePage = location.pathname === "/";
-
-  fetch(isHomePage ? "/@index" : "/@recents")
-    .then((x) => x.json())
-    .then((list) => {
-      const recents = document.querySelector("aside ul");
-      const underscore = /_/g;
-      const frag = document.createDocumentFragment();
-
-      list.forEach((link) => {
-        const text = link.slice(1).replace(underscore, " ");
-        const li = document.createElement("li");
-        const anchor = document.createElement("a");
-        li.append(anchor);
-        anchor.href = link;
-        anchor.innerText = text.slice(1);
-        anchor.className =
-          'class="block px-4 py-2 border border-blue-200 rounded hover:border-blue-300"';
-        frag.append(li);
-      });
-
-      recents.append(frag);
-    });
 }
 
 if (document.readyState === "loading") {
