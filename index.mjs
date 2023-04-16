@@ -35,8 +35,15 @@ async function serve(req, res) {
   }
 
   if (req.url === "/@index") {
-    const list = String(spawnSync('tail -n 1 cache/*').stdout);
-    res.end(JSON.stringify(list.trim().split('\n').filter(Boolean)));
+    const cacheList = spawnSync("head", ["-n1", "cache/*"]);
+    const list = String(cacheList.stdout || cacheList.output);
+    const lines = list
+      .trim()
+      .split("\n")
+      .filter((s) => s && s.startsWith("<!-- "))
+      .map((s) => s.replace("<!-- ", "").replace(" -->", "").trim());
+
+    res.end(JSON.stringify(lines));
     return;
   }
 
