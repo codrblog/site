@@ -8,7 +8,7 @@ function search() {
 function onLoad() {
   const article = document.querySelector("main article");
   article.innerHTML = "";
-  const template = document.querySelector("#content")
+  const template = document.querySelector("#content");
   article.append(template.content);
   template.remove();
 
@@ -22,7 +22,9 @@ function onLoad() {
     search();
   });
 
-  fetch("/@recents")
+  const isHomePage = location.pathname === "/";
+
+  fetch(isHomePage ? "/@index" : "/@recents")
     .then((x) => x.json())
     .then((list) => {
       const recents = document.querySelector("aside ul");
@@ -36,7 +38,8 @@ function onLoad() {
         li.append(anchor);
         anchor.href = link;
         anchor.innerText = text.slice(1);
-        anchor.className = 'class="block px-4 py-2 border border-blue-200 rounded hover:border-blue-300"'
+        anchor.className =
+          'class="block px-4 py-2 border border-blue-200 rounded hover:border-blue-300"';
         frag.append(li);
       });
 
