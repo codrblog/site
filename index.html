@@ -14,12 +14,12 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
   </head>
 
-  <body class="bg-blue-400">
+  <body>
     <header
       class="bg-white px-4 py-2 md:flex flex-wrap md:justify-between items-center shadow-lg"
     >
       <h1 class="text-2xl font-semibold text-gray-900 mb-2 md:mb-0">
-        <a href="/">CODR - The infinite coding blog</a>
+        <a href="/">CODR - The infinite blog</a>
       </h1>
       <form class="flex hidden" action="/" method="get">
         <label for="search" class="sr-only">Search</label>
@@ -33,9 +33,7 @@
         <button
           class="bg-blue-600 leading-4 rounded-r border border-blue-600 text-white font-bold py-2 px-4 rounded-r focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           type="submit"
-        >
-          OK
-        </button>
+        >OK</button>
       </form>
     </header>
 
@@ -71,23 +69,23 @@
       </article>
       <form
         id="suggestion"
-        class="hidden max-w-5xl mx-auto mt-6 p-6 border border-gray-200 rounded"
+        class="hidden max-w-5xl mx-auto mt-6 p-6 border border-gray-200 bg-gray-500 text-white rounded-lg"
       >
         <label for="suggestion" class="block mb-2"
           >Suggest an improvement on this page:</label
         >
         <div class="flex items-center">
-          <input class="w-full p-2 border border-gray-300 rounded" />
+          <input class="w-full p-2 border border-gray-300 rounded-l" />
           <button
             type="submit"
-            class="px-4 py-2 bg-blue-600 text-white rounded"
+            class="px-4 py-2 bg-blue-600 text-white rounded-r"
           >
             Submit
           </button>
         </div>
       </form>
     </main>
-    <aside class="bg-blue-400 text-white">
+    <aside class="bg-gray-300 text-gray-500">
       <div class="max-w-5xl mx-auto mt-5 px-6 py-6 md:px-0">
         <h2 class="text-xl font-bold mb-5">Recent searches</h2>
         <nav></nav>
