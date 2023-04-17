@@ -51,6 +51,7 @@ async function serve(req, res) {
 
     if (!lines.length) {
       res.end(JSON.stringify(recents));
+      return;
     }
 
     res.end(JSON.stringify(lines));
