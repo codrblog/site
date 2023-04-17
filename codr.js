@@ -2,9 +2,9 @@ function search(event) {
   event.preventDefault();
   const query = event.target.querySelector("input").value;
 
-  window.location.href = '/article/' + encodeURI(
-    query.toLowerCase().trim().split(/\W/).filter(Boolean).join("_")
-  );
+  window.location.href =
+    "/article/" +
+    encodeURI(query.toLowerCase().trim().split(/\W/).filter(Boolean).join("_"));
 }
 
 function onLoad() {
@@ -34,7 +34,7 @@ function createLinksFromList(list) {
   const frag = document.createDocumentFragment();
 
   list.forEach((link) => {
-    const text = link.slice(1).replace(underscore, " ");
+    const text = link.replace("/article/", "").replace(underscore, " ");
     const li = document.createElement("li");
     const anchor = document.createElement("a");
     li.append(anchor);

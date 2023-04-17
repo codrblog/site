@@ -91,7 +91,7 @@ async function serve(req, res) {
   }
 
   if (!recents.includes(urlPath)) {
-    recents.unshift(urlPath);
+    recents.unshift(urlPath.replace());
   }
 
   if (recents.length > 100) {
@@ -107,7 +107,8 @@ async function renderContent(res, content) {
   try {
     const html = await content;
     res.end(`<template id="content">${html}</template>`);
-  } catch (_e) {
+  } catch (error) {
+    console.log(error);
     res.end('<template id="content">Failed to load article :(</template>');
   }
 }
@@ -127,7 +128,7 @@ async function generate(urlPath, suggestion) {
     return fromCache;
   }
 
-  let prompt = promptText.replace("{urlPath}", urlPath);
+  let prompt = promptText.replace("{urlPath}", urlPath.replace('/article/', ''));
 
   if (suggestion) {
     prompt += "Consider this suggestion for an improved content: " + suggestion;
@@ -146,10 +147,15 @@ async function generate(urlPath, suggestion) {
   const article = `<!-- ${urlPath} -->\n\n${responses}`;
 
   if (useCache) {
-    writeFileSync(cachePath, article);
+    writeToCache(urlPath, article)
   }
 
   return article;
+}
+
+function writeToCache(url, content) {
+  const filePath = join(CWD, "cache", sha256(url));
+  writeFileSync(cachePath, content);
 }
 
 function readFromCache(url) {
