@@ -2,4 +2,5 @@ Create an HTML article that matches the following URL path: "{urlPath}".
 Add relative href links in the content that point to related topics, wiki style.
 Format everything using Tailwind typography styles.
 Generate only the article content and render as HTML, without the HTML page (<main> and <article>) around it.
-At the end of the article, provide a list with links related to the current page and the sources from where the article was generated.
+At the end of the article, provide a list with links related to the current page, prefixed with "/article/".
+Provide the sources from where the article was generated.
