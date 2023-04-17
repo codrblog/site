@@ -77,6 +77,13 @@ function showArticleContent() {
   if (title) {
     window.title = title.textContent.trim();
   }
+
+  [...article.querySelectorAll('code')].forEach(c => {
+    c.innerText = c.innerText.trim();
+    c.classList.add('bg-gray-800', 'text-white')
+  });
+
+  [...article.querySelectorAll('a:not([href^=http])')].forEach(c => c.href = '/article/' + c.getAttribute('href').replace('../', ''));
 }
 
 if (document.readyState === "loading") {
