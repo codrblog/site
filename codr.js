@@ -9,10 +9,14 @@ function search(event) {
 
 function addSuggestion(event) {
   event.preventDefault();
-  const suggestion = document.querySelector("#suggestion input").value;
+  const form = document.querySelector("#suggestion");
+  const suggestion = form.querySelector("input").value;
+
   fetch("/@suggestion" + location.pathname, {
     method: "POST",
     body: suggestion,
+  }).then(() => {
+    form.innerHTML = "Thank you!";
   });
 }
 
