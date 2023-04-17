@@ -47,16 +47,11 @@ async function serve(req, res) {
   }
 
   if (req.url === "/@index") {
-    const cacheList = spawnSync("head", ["-n1", join(CWD, "cache", "*")]);
-    console.log(cacheList);
-    console.log("head", ["-n1", join(CWD, "cache", "*")].join(" "));
+    const lines = readIndex();
 
-    const list = String(cacheList.stdout || cacheList.output);
-    const lines = list
-      .trim()
-      .split("\n")
-      .filter((s) => s && s.startsWith("<!-- "))
-      .map((s) => s.replace("<!-- ", "").replace(" -->", "").trim());
+    if (!lines.length) {
+      res.end(JSON.stringify(recents));
+    }
 
     res.end(JSON.stringify(lines));
     return;
@@ -88,6 +83,12 @@ async function serve(req, res) {
 
   console.log(req.url);
   const urlPath = req.url;
+  if (!urlPath.startsWith("/article/")) {
+    res.writeHead(404);
+    res.end();
+    return;
+  }
+
   if (!recents.includes(urlPath)) {
     recents.unshift(urlPath);
   }
@@ -119,11 +120,10 @@ async function readBody(request) {
 }
 
 async function generate(urlPath, suggestion) {
-  const hash = sha256(urlPath);
-  const cachePath = join(CWD, "cache", hash);
+  const fromCache = readFromCache(urlPath);
 
-  if (useCache && existsSync(cachePath) && !suggestion) {
-    return readFileSync(cachePath, "utf8");
+  if (useCache && !suggestion && fromCache) {
+    return fromCache;
   }
 
   let prompt = promptText.replace("{urlPath}", urlPath);
@@ -149,6 +149,34 @@ async function generate(urlPath, suggestion) {
   }
 
   return article;
+}
+
+function readFromCache(url) {
+  const filePath = join(CWD, "cache", sha256(url));
+
+  if (existsSync(filePath)) {
+    return readFileSync(filePath, "utf8");
+  }
+
+  return "";
+}
+
+function readIndex() {
+  const cacheFiles = readdirSync(join(CWD, "cache"));
+  const headers = cacheFiles
+    .map((file) =>
+      spawnSync("head", ["-n1", join(CWD, "cache", file)], { encoding: "utf8" })
+    )
+    .map((sh) => String(sh.stdout || sh.output))
+    .join("\n");
+
+  const lines = headers
+    .trim()
+    .split("\n")
+    .filter((s) => Boolean(s.trim()) && s.startsWith("<!--"))
+    .map((s) => s.replace("<!--", "").replace("-->", "").trim());
+
+  return lines;
 }
 
 createServer(serve).listen(process.env.PORT);

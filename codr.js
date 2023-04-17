@@ -2,7 +2,7 @@ function search(event) {
   event.preventDefault();
   const query = event.target.querySelector("input").value;
 
-  window.location.href = encodeURI(
+  window.location.href = '/article/' + encodeURI(
     query.toLowerCase().trim().split(/\W/).filter(Boolean).join("_")
   );
 }
