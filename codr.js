@@ -20,7 +20,7 @@ function onLoad() {
   fetch(isHomePage ? "/@index" : "/@recents")
     .then((x) => x.json())
     .then((list) => {
-      const recents = document.querySelector("aside");
+      const recents = document.querySelector("aside nav");
       recents.append(createLinksFromList(list));
     });
 
