@@ -20,7 +20,7 @@ function onLoad() {
   fetch(isHomePage ? "/@index" : "/@recents")
     .then((x) => x.json())
     .then((list) => {
-      const recents = document.querySelector("aside ul");
+      const recents = document.querySelector("aside");
       recents.append(createLinksFromList(list));
     });
 
@@ -35,14 +35,11 @@ function createLinksFromList(list) {
 
   list.forEach((link) => {
     const text = link.replace("/article/", "").replace(underscore, " ");
-    const li = document.createElement("li");
     const anchor = document.createElement("a");
-    li.append(anchor);
     anchor.href = link;
     anchor.innerText = text;
-    anchor.className =
-      'class="block px-4 py-2 border border-blue-200 rounded hover:border-blue-300"';
-    frag.append(li);
+    anchor.className = "inline-block p-2";
+    frag.append(anchor);
   });
 
   return frag;
