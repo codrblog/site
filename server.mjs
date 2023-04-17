@@ -163,7 +163,7 @@ async function generate(urlPath, suggestion) {
 
 function writeToCache(url, content) {
   const filePath = join(CWD, "cache", sha256(url));
-  writeFileSync(cachePath, content);
+  writeFileSync(filePath, content);
   console.log("written to cache: %s", url);
 }
 
