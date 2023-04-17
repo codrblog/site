@@ -9,8 +9,8 @@ function search(event) {
 
 function addSuggestion(event) {
   event.preventDefault();
-  const suggestion = document.querySelector("#suggestion textarea").value;
-  fetch("/@suggestion" + window.location.href, {
+  const suggestion = document.querySelector("#suggestion input").value;
+  fetch("/@suggestion" + location.pathname, {
     method: "POST",
     body: suggestion,
   });
