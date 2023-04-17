@@ -78,6 +78,8 @@ async function serve(req, res) {
     }
 
     res.end();
+    console.log("suggestion for %s", suggestionPath);
+    console.log(suggestion);
     generate(suggestionPath, suggestion);
     return;
   }
@@ -125,10 +127,14 @@ async function generate(urlPath, suggestion) {
   const fromCache = readFromCache(urlPath);
 
   if (useCache && !suggestion && fromCache) {
+    console.log("from cache: %s", urlPath);
     return fromCache;
   }
 
-  let prompt = promptText.replace("{urlPath}", urlPath.replace('/article/', ''));
+  let prompt = promptText.replace(
+    "{urlPath}",
+    urlPath.replace("/article/", "")
+  );
 
   if (suggestion) {
     prompt += "Consider this suggestion for an improved content: " + suggestion;
@@ -139,15 +145,17 @@ async function generate(urlPath, suggestion) {
     messages: [{ role: "user", content: prompt }],
   };
 
+  console.log("from AI start: %s %s", urlPath, new Date().toISOString());
   const completion = await openai.createChatCompletion(options);
   const responses = completion.data.choices
     .map((c) => c.message.content)
     .join("\n");
 
+  console.log("from AI end: %s %s", urlPath, new Date().toISOString());
   const article = `<!-- ${urlPath} -->\n\n${responses}`;
 
   if (useCache) {
-    writeToCache(urlPath, article)
+    writeToCache(urlPath, article);
   }
 
   return article;
@@ -156,6 +164,7 @@ async function generate(urlPath, suggestion) {
 function writeToCache(url, content) {
   const filePath = join(CWD, "cache", sha256(url));
   writeFileSync(cachePath, content);
+  console.log("written to cache: %s", url);
 }
 
 function readFromCache(url) {
