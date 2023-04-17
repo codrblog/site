@@ -7,8 +7,18 @@ function search(event) {
     encodeURI(query.toLowerCase().trim().split(/\W/).filter(Boolean).join("_"));
 }
 
+function addSuggestion(event) {
+  event.preventDefault();
+  const suggestion = document.querySelector("#suggestion input").value;
+  fetch("/@suggestion" + window.location.href, {
+    method: "POST",
+    body: suggestion,
+  });
+}
+
 function onLoad() {
   showArticleContent();
+
   const isHomePage = location.pathname === "/";
   const headerForm = document.querySelector("header form");
 
@@ -26,6 +36,12 @@ function onLoad() {
 
   if (isHomePage) {
     document.querySelector("article form").addEventListener("submit", search);
+  } else {
+    const form = document.querySelector("#suggestion");
+    if (form) {
+      form.classList.remove("hidden");
+      form.addEventListener("submit", addSuggestion);
+    }
   }
 }
 

@@ -63,7 +63,7 @@ async function serve(req, res) {
     return;
   }
 
-  if (req.url.startsWith("/@suggestion")) {
+  if (req.url.startsWith("/@suggestion/")) {
     if (!useCache) {
       res.writeHead(201);
       res.end();

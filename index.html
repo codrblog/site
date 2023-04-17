@@ -44,7 +44,7 @@
         <div class="text-center my-10">
           <img
             src="/icon.png"
-            class="rounded-lg overflow-hidden mb-6"
+            class="rounded-lg overflow-hidden mb-6 mx-auto"
             alt="CODR"
           />
           <div role="status">
@@ -69,6 +69,18 @@
           </div>
         </div>
       </article>
+      <form id="suggestion" class="hidden">
+        <label for="suggestion" class="block mb-2"
+          >Suggest an improvement on this page:</label
+        >
+        <textarea
+          id="suggestion"
+          class="w-full mb-4 p-2 border border-gray-300 rounded"
+        ></textarea>
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">
+          Submit
+        </button>
+      </form>
     </main>
     <aside class="bg-blue-400 text-white">
       <div class="max-w-5xl mx-auto mt-5 px-6 py-6 md:px-0">
