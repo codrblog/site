@@ -80,13 +80,18 @@ function showArticleContent() {
 
   [...article.querySelectorAll('code')].forEach(c => {
     c.innerText = c.innerText.trim();
-    
+
     if (c.parentNode.nodeName === 'PRE') {
       c.parentNode.classList.add('bg-gray-800', 'text-white', 'rounded-lg');
     }
   });
 
-  [...article.querySelectorAll('a:not([href^=http])')].forEach(c => c.href = '/article/' + c.getAttribute('href').replace('../', ''));
+  [...article.querySelectorAll('a:not([href^=http])')].forEach(c => {
+    const href = c.getAttribute('href');
+    if (!href.startsWith('/article/')) {
+      c.href = '/article/' + href.replace('../', '');
+    }
+  });
 }
 
 if (document.readyState === "loading") {

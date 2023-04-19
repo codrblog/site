@@ -37,7 +37,7 @@ async function serve(req, res) {
     return;
   }
 
-  if (req.url === "/") {
+  if (req.url === "/" || !req.url.replace('/article/', '')) {
     return renderContent(res, searchForm);
   }
 
@@ -137,7 +137,7 @@ async function generate(urlPath, suggestion) {
   );
 
   if (suggestion) {
-    prompt += "Consider this suggestion for an improved content: " + suggestion;
+    prompt += "Consider this suggestion for an improved content: " + suggestion.slice(0, 255);
   }
 
   const options = {
@@ -190,12 +190,13 @@ function readIndex() {
     .trim()
     .split("\n")
     .filter((s) => Boolean(s.trim()) && s.startsWith("<!--"))
-    .map((s) => s.replace("<!--", "").replace("-->", "").trim());
+    .map((s) => s.replace("<!--", "").replace("-->", "").trim().slice(0, 255));
 
   return lines;
 }
 
 createServer(serve).listen(process.env.PORT);
+recents.push(...readIndex());
 
 function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
