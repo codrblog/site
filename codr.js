@@ -69,9 +69,23 @@ function showArticleContent() {
   const article = document.querySelector("main article");
   const template = document.querySelector("#content");
 
-  article.innerHTML = "";
-  article.append(template.content);
+  renderArticle(article, template.content.innerText);
   template.remove();
+}
+
+async function renderArticle(article, content) {
+  const response = await fetch('https://markdown.jsfn.run', { method: 'POST', mode: 'cors', body: content });
+  if (!response.ok) {
+    article.innerText = content;
+    return;
+  }
+
+  const html = await response.text();
+  const tpl = document.createElement('template');
+  tpl.innerHTML = html;
+  tpl.content.querySelectorAll('script,style,link').forEach(t => t.remove());
+  article.innerHTML = '';
+  article.append(tpl.content.cloneNode(true));
 
   const title = article.querySelector("h1");
   if (title) {
@@ -80,16 +94,13 @@ function showArticleContent() {
 
   [...article.querySelectorAll('code')].forEach(c => {
     c.innerText = c.innerText.trim();
-
-    if (c.parentNode.nodeName === 'PRE') {
-      c.parentNode.classList.add('bg-gray-800', 'text-white', 'rounded-lg');
-    }
+    c.classList.add('bg-gray-800', 'text-white', 'rounded-lg', 'block');
   });
 
   [...article.querySelectorAll('a:not([href^=http])')].forEach(c => {
     const href = c.getAttribute('href');
     if (!href.startsWith('/article/')) {
-      c.href = '/article/' + href.replace('../', '');
+      c.href = '/article/' + href;
     }
   });
 }
