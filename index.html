@@ -61,9 +61,8 @@
             <span class="sr-only">Loading...</span>
           </div>
         </div>
-        <div class="prose lg:prose-l" id="content">
-        </div>
-        <form class="bg-gray-100 rounded-md p-4 flex items-center" id="search">
+        <div class="prose lg:prose-l" id="content"></div>
+        <form class="bg-gray-100 rounded-lg p-6 flex items-center mt-10" id="search">
           <div class="flex-shrink-0 mr-4">
             <svg
               class="h-6 w-6 text-gray-400"
@@ -91,7 +90,7 @@
       </article>
     </main>
     <aside class="border border-b-0 bg-white rounded-t mt-6 max-w-5xl mx-auto px-10 py-6 w-full flex-grow">
-      <form id="suggestion">
+      <form id="suggestion" class="hidden mb-6">
         <label for="suggestion" class="block mb-2"
           >Suggest an improvement on this page:</label
         >
@@ -103,10 +102,8 @@
           >OK</button>
         </div>
       </form>
-      <div class="mt-6">
-        <h2 class="text-xl font-bold mb-5">Recent searches</h2>
-        <nav class="prose-sm"></nav>
-      </div>
+      <h2 class="text-xl font-bold mb-5">Recent searches</h2>
+      <nav class="prose-sm"></nav>
     </aside>
   </body>
 </html>

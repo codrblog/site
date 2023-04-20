@@ -1,4 +1,4 @@
-function search(event) {
+function onSearch(event) {
   event.preventDefault();
   const query = event.target.querySelector("input").value;
 
@@ -7,46 +7,48 @@ function search(event) {
     encodeURI(query.toLowerCase().trim().split(/\W/).filter(Boolean).join("_"));
 }
 
-function addSuggestion(event) {
+function onAddSuggestion(event) {
   event.preventDefault();
   const form = document.querySelector("#suggestion");
   const suggestion = form.querySelector("input").value;
 
-  fetch("/@suggestion" + location.pathname, {
-    method: "POST",
-    body: suggestion,
-  }).then(() => {
-    form.innerHTML = "Thank you!";
-  });
+  form.innerHTML = "Thank you!";
+  fetch("/@suggestion" + location.pathname, { method: "POST", body: suggestion });
 }
 
 function onLoad() {
-  showArticleContent();
-
   const isHomePage = location.pathname === "/";
-  const headerForm = document.querySelector("header form");
+  document.querySelector("article form").addEventListener("submit", onSearch);
 
-  headerForm.addEventListener("submit", search);
+  showArticleContent();
+  updateRecents(isHomePage)
+  
   if (!isHomePage) {
-    headerForm.classList.remove("hidden");
+    showHeadderSearchForm();
+    showSuggestionsForm();
   }
+}
 
+function showHeadderSearchForm() {
+  const headerForm = document.querySelector("header form");
+  headerForm.addEventListener("submit", onSearch);
+  headerForm.classList.remove("hidden");
+}
+
+function showSuggestionsForm() {
+  const form = document.querySelector("#suggestion");
+  if (form) {
+    form.classList.remove("hidden");
+    form.addEventListener("submit", onAddSuggestion);
+  }
+}
+function updateRecents(isHomePage) {
   fetch(isHomePage ? "/@index" : "/@recents")
     .then((x) => x.json())
     .then((list) => {
       const recents = document.querySelector("aside nav");
       recents.append(createLinksFromList(list));
     });
-
-  if (isHomePage) {
-    document.querySelector("article form").addEventListener("submit", search);
-  } else {
-    const form = document.querySelector("#suggestion");
-    if (form) {
-      form.classList.remove("hidden");
-      form.addEventListener("submit", addSuggestion);
-    }
-  }
 }
 
 function createLinksFromList(list) {
@@ -57,6 +59,7 @@ function createLinksFromList(list) {
     const text = link.replace("/article/", "").replace(underscore, " ");
     const anchor = document.createElement("a");
     anchor.href = link;
+    anchor.className = 'block px-2 py-1';
     anchor.innerText = text;
     frag.append(anchor);
   });
