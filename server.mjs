@@ -107,7 +107,7 @@ async function renderContent(res, content) {
 
   try {
     const html = await content;
-    res.end(`<template id="content">${html}</template>`);
+    res.end(`<template id="tpl">${html}</template>`);
   } catch (error) {
     console.log(error);
     res.end('<template id="tpl">Failed to load article :(</template>');
