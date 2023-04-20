@@ -86,7 +86,10 @@ async function renderArticle(article, content) {
   tpl.innerHTML = html;
   tpl.content.querySelectorAll('script,style,link').forEach(t => t.remove());
   article.innerHTML = '';
-  article.append(tpl.content.cloneNode(true));
+  const div = document.createElement('div');
+  div.className = 'prose lg:prose-lg';
+  article.append(div);
+  div.append(tpl.content.cloneNode(true));
 
   const title = article.querySelector("h1");
   if (title) {
