@@ -67,10 +67,16 @@ function createLinksFromList(list) {
 function showArticleContent() {
   const article = document.querySelector("main article");
   const template = document.querySelector("#content");
-  const t = document.createElement('div');
-  [...template.content.childNodes].forEach(c => t.appendChild(c));
-  renderArticle(article, t.innerText);
-  template.remove();
+  if (template.content) {
+
+    const t = document.createElement('div');
+    [...template.content.childNodes].forEach(c => t.appendChild(c));
+    renderArticle(article, t.innerText);
+    template.remove();
+    return;
+  }
+
+  renderArticle(article, '');
 }
 
 async function renderArticle(article, content) {
