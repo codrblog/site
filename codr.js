@@ -98,7 +98,10 @@ async function renderArticle(article, content) {
 
   [...article.querySelectorAll('code')].forEach(c => {
     c.innerText = c.innerText.trim();
-    c.classList.add('bg-gray-800', 'text-white', 'rounded-lg', 'block');
+
+    if (c.parentNode.nodeName === 'PRE') {
+      c.classList.add('bg-gray-800', 'text-white', 'rounded-lg', 'block');
+    }
   });
 
   [...article.querySelectorAll('a:not([href^=http])')].forEach(c => {
