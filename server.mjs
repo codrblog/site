@@ -110,7 +110,7 @@ async function renderContent(res, content) {
     res.end(`<template id="content">${html}</template>`);
   } catch (error) {
     console.log(error);
-    res.end('<template id="content">Failed to load article :(</template>');
+    res.end('<template id="tpl">Failed to load article :(</template>');
   }
 }
 
