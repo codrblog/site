@@ -84,9 +84,9 @@ async function renderArticle(article, content) {
   const tpl = document.createElement('template');
   tpl.innerHTML = html;
   tpl.content.querySelectorAll('script,style,link').forEach(t => t.remove());
-  article.innerHTML = '';
   const div = document.querySelector('#content');
   div.append(tpl.content.cloneNode(true));
+  document.querySelector('#loading').classList.add('hidden');
 
   const title = article.querySelector("h1");
   if (title) {
