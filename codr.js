@@ -58,7 +58,6 @@ function createLinksFromList(list) {
     const anchor = document.createElement("a");
     anchor.href = link;
     anchor.innerText = text;
-    anchor.className = "inline-block p-2";
     frag.append(anchor);
   });
 

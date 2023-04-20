@@ -19,10 +19,10 @@
           <a href="/">CODR - The infinite blog</a>
         </h1>
         <form class="flex hidden" action="/" method="get">
-          <label for="search" class="sr-only">Search</label>
+          <label for="search-input" class="sr-only">Search</label>
           <input
             name="search"
-            id="search"
+            id="search-input"
             type="text"
             class="leading-4 border border-gray-400 py-2 px-4 rounded-l w-full"
             placeholder="Search..."
@@ -34,7 +34,7 @@
         </form>
       </header>
       <article class="border border-t-0 rounded-b bg-white p-10">
-        <div class="prose lg:prose-l">
+        <div class="prose lg:prose-l" id="content">
           <div class="text-center my-10">
             <img
               src="/icon.png"
@@ -63,6 +63,31 @@
             </div>
           </div>
         </div>
+        <form class="bg-gray-100 rounded-md p-4 flex items-center" id="search">
+          <div class="flex-shrink-0 mr-4">
+            <svg
+              class="h-6 w-6 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-4.873-4.873"
+              ></path>
+              <circle cx="10" cy="10" r="7"></circle>
+            </svg>
+          </div>
+          <input
+            class="block px-6 w-full h-16 text-gray-800 font-semibold text-xl rounded-lg focus:outline-none"
+            type="text"
+            placeholder="Ask me anything 😀"
+            aria-label="Ask me anything"
+          />
+        </form>        
       </article>
     </main>
     <aside class="border border-b-0 bg-white rounded-t mt-6 max-w-5xl mx-auto px-10 py-6 w-full flex-grow">
@@ -80,7 +105,7 @@
       </form>
       <div class="mt-6">
         <h2 class="text-xl font-bold mb-5">Recent searches</h2>
-        <nav></nav>
+        <nav class="prose-sm"></nav>
       </div>
     </aside>
   </body>

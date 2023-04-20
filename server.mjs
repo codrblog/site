@@ -19,7 +19,6 @@ const configuration = new Configuration({ apiKey });
 const openai = new OpenAIApi(configuration);
 
 const index = readFileSync("./index.html", "utf8");
-const searchForm = readFileSync("./search.html", "utf8");
 const script = readFileSync("./codr.js", "utf8");
 const promptText = readFileSync("./prompt.txt", "utf8");
 const assets = readdirSync(join(CWD, "assets"));
@@ -38,7 +37,7 @@ async function serve(req, res) {
   }
 
   if (req.url === "/" || !req.url.replace('/article/', '')) {
-    return renderContent(res, searchForm);
+    return renderContent(res, '');
   }
 
   if (req.url === "/codr.js") {
