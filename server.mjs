@@ -5,6 +5,7 @@ import {
   readFileSync,
   writeFileSync,
   existsSync,
+  unlinkSync,
   createReadStream,
   readdirSync,
 } from "fs";
@@ -45,10 +46,10 @@ async function serve(req, res) {
   }
 
   if (req.url === "/@index") {
-    const lines = readIndex();
+    const lines = readIndex().sort();
     const spacer = /_/g;
     const content = '<h1>Index</h1><ul>' + 
-      lines.map(line => `<li><a href="${line}">${line.replace(spacer, ' ')}</a></li>`)
+      lines.map(line => `<li><a href="${line}">${line.replace(spacer, ' ').replace("/article/", "")}</a></li>`)
       + '</ul>';
     
     res.end(content);
@@ -72,6 +73,13 @@ async function serve(req, res) {
     res.end();
     console.log("suggestion for %s", suggestionPath);
     console.log(suggestion);
+    
+    if (String(suggestion).trim().toLowerCase() === 'delete it') {
+      req.writeHead(201);
+      removeFromCache(req.url);
+      return;
+    }
+    
     generate(suggestionPath, suggestion);
     return;
   }
@@ -149,6 +157,15 @@ function writeToCache(url, content) {
   const filePath = join(CWD, "cache", sha256(url));
   writeFileSync(filePath, content);
   console.log("written to cache: %s", url);
+}
+
+function removeFromCache(url) {
+  const filePath = join(CWD, "cache", sha256(url));
+  
+  if (existsSync(filePath)) {
+    unlinkSync(filePath);
+    console.log("removed from cache: %s", url);
+  }
 }
 
 function readFromCache(url) {
