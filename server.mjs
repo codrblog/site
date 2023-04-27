@@ -75,8 +75,8 @@ async function serve(req, res) {
     console.log(suggestion);
     
     if (String(suggestion).trim().toLowerCase() === 'delete it') {
-      req.writeHead(201);
       removeFromCache(req.url);
+      res.writeHead(204);
       return;
     }
     
