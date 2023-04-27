@@ -70,15 +70,15 @@ async function serve(req, res) {
       req.writeHead(400);
     }
 
-    res.end();
-    console.log("suggestion for %s", suggestionPath);
-    console.log(suggestion);
-    
     if (String(suggestion).trim().toLowerCase() === 'delete it') {
-      removeFromCache(req.url);
+      removeFromCache(suggestionPath);
       res.writeHead(204);
       return;
     }
+
+    res.end();
+    console.log("suggestion for %s", suggestionPath);
+    console.log(suggestion);
     
     generate(suggestionPath, suggestion);
     return;
