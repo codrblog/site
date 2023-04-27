@@ -9,7 +9,7 @@ function onSearch(event) {
 
 function onAddSuggestion(event) {
   event.preventDefault();
-  const form = document.querySelector("#suggestion");
+  const form = document.querySelector("#suggestion form");
   const suggestion = form.querySelector("input").value;
 
   form.innerHTML = "Thank you!";
@@ -21,50 +21,25 @@ function onLoad() {
   document.querySelector("article form").addEventListener("submit", onSearch);
 
   showArticleContent();
-  updateRecents(isHomePage)
   
   if (!isHomePage) {
-    showHeadderSearchForm();
+    showHeaderSearchForm();
     showSuggestionsForm();
   }
 }
 
-function showHeadderSearchForm() {
+function showHeaderSearchForm() {
   const headerForm = document.querySelector("header form");
   headerForm.addEventListener("submit", onSearch);
   headerForm.classList.remove("hidden");
 }
 
 function showSuggestionsForm() {
-  const form = document.querySelector("#suggestion");
-  if (form) {
-    form.classList.remove("hidden");
-    form.addEventListener("submit", onAddSuggestion);
+  const suggestions = document.querySelector("#suggestion");
+  if (suggestions) {
+    suggestions.classList.remove("hidden");
+    suggestions.querySelector('form')?.addEventListener("submit", onAddSuggestion);
   }
-}
-function updateRecents(isHomePage) {
-  fetch(isHomePage ? "/@index" : "/@recents")
-    .then((x) => x.json())
-    .then((list) => {
-      const recents = document.querySelector("aside nav");
-      recents.append(createLinksFromList(list));
-    });
-}
-
-function createLinksFromList(list) {
-  const underscore = /_/g;
-  const frag = document.createDocumentFragment();
-
-  list.forEach((link) => {
-    const text = link.replace("/article/", "").replace(underscore, " ");
-    const anchor = document.createElement("a");
-    anchor.href = link;
-    anchor.className = 'block px-2 py-1';
-    anchor.innerText = text;
-    frag.append(anchor);
-  });
-
-  return frag;
 }
 
 function showArticleContent() {

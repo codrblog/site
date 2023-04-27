@@ -22,7 +22,6 @@ const index = readFileSync("./index.html", "utf8");
 const script = readFileSync("./codr.js", "utf8");
 const promptText = readFileSync("./prompt.txt", "utf8");
 const assets = readdirSync(join(CWD, "assets"));
-const recents = [];
 
 async function serve(req, res) {
   if (req.url === "/favicon.ico") {
@@ -47,18 +46,12 @@ async function serve(req, res) {
 
   if (req.url === "/@index") {
     const lines = readIndex();
-
-    if (!lines.length) {
-      res.end(JSON.stringify(recents));
-      return;
-    }
-
-    res.end(JSON.stringify(lines));
-    return;
-  }
-
-  if (req.url === "/@recents") {
-    res.end(JSON.stringify(recents));
+    const spacer = /_/g;
+    const content = '<h1>Index</h1><ul>' + 
+      lines.map(line => `<li><a href="${line}">${line.replace(spacer, ' ')}</a></li>`)
+      + '</ul>';
+    
+    res.end(content);
     return;
   }
 
