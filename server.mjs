@@ -84,14 +84,6 @@ async function serve(req, res) {
     return;
   }
 
-  if (!recents.includes(urlPath)) {
-    recents.unshift(urlPath.replace());
-  }
-
-  if (recents.length > 100) {
-    recents.pop();
-  }
-
   renderContent(res, generate(urlPath));
 }
 
@@ -188,7 +180,6 @@ function readIndex() {
 }
 
 createServer(serve).listen(process.env.PORT);
-recents.push(...readIndex());
 
 function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
