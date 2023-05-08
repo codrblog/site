@@ -151,8 +151,7 @@ function createCompletionRequest(urlPath, suggestion) {
   });
   
   console.log('STREAM', stream.getHeaders(), body);
-  stream.write(JSON.stringify(body));
-  
+
   const output = new EventEmitter();
   stream.on('response', (r) => {
     r.on('data', (event) => {
@@ -167,7 +166,7 @@ function createCompletionRequest(urlPath, suggestion) {
     });
   });
 
-  stream.end();
+  stream.end(JSON.stringify(body));
 
   return output;
 }
