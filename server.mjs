@@ -23,6 +23,10 @@ const indexParts = readFileSync("./index.html", "utf8").split(contentMarker);
 const promptText = readFileSync("./prompt.txt", "utf8");
 const assets = readdirSync(join(CWD, "assets"));
 
+function log(...args) {
+  console.log([`[${new Date().toISOString().slice(0, 19)}]`], ...args);
+}
+
 async function serve(req, res) {
   if (req.url === "/favicon.ico") {
     res.writeHead(404);
@@ -74,10 +78,10 @@ async function serve(req, res) {
     }
 
     res.end();
-    console.log("suggestion for %s", suggestionPath);
-    console.log(suggestion);
+    log("suggestion for %s", suggestionPath);
+    log(suggestion);
 
-    createStreamWithCache(suggestionPath, suggestion);
+    createCompletionWithCache(suggestionPath, suggestion);
     return;
   }
 
@@ -100,24 +104,23 @@ async function readBody(request) {
 }
 
 async function streamContent(res, urlPath) {
-  console.log('new article', new Date().toISOString(), urlPath);
   res.writeHead(200);
   res.write(indexParts[0]);
 
   if (useCache && isCached(urlPath)) {
-    console.log("from cache: %s", urlPath);
+    log("from cache: %s", urlPath);
     res.write(readFromCache(urlPath));
     res.write(indexParts[1]);
     res.end();
     return;
   }
 
-  const stream = createStreamWithCache(urlPath, '');
+  const stream = createCompletionWithCache(urlPath, '');
   stream.on('data', (next) => res.write(next));
   stream.on('end', () => res.end(indexParts[1]));
 }
 
-function createStreamWithCache(urlPath, suggestion) {
+function createCompletionWithCache(urlPath, suggestion) {
   const filePath = getCachePath(urlPath);
   const stream = createCompletionRequest(urlPath, suggestion);
 
@@ -151,8 +154,6 @@ function createCompletionRequest(urlPath, suggestion) {
     }
   });
   
-  console.log('STREAM', stream.getHeaders(), body);
-
   const output = new EventEmitter();
   stream.on('response', (r) => {
     const chunks = [];
