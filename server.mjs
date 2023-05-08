@@ -1,10 +1,10 @@
-import { createServer, request } from "http";
+import { createServer } from "http";
+import { request } from "https";
 import { join } from "path";
 import { createHash } from "crypto";
 import { spawnSync } from "child_process";
 import {
   readFileSync,
-  writeFileSync,
   existsSync,
   unlinkSync,
   createReadStream,
