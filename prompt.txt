@@ -1,4 +1,5 @@
 Create an article, using only markdown format, that matches the following URL path: "{urlPath}".
-Add links in the content that point to related topics.
 Provide the sources from where the article was created.
 As as much content as possible.
+
+At the end of the article, generate at least 3 links with content related to the current page.
