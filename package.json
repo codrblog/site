@@ -6,5 +6,8 @@
     "ci": "echo true"
   },
   "private": true,
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.1.0"
+  }
 }

@@ -1,3 +1,4 @@
+import { EventEmitter } from "events";
 import { createServer } from "http";
 import { request } from "https";
 import { join } from "path";
@@ -75,7 +76,7 @@ async function serve(req, res) {
     console.log("suggestion for %s", suggestionPath);
     console.log(suggestion);
 
-    generate(suggestionPath, suggestion);
+    createStreamWithCache(suggestionPath, suggestion);
     return;
   }
 
@@ -86,7 +87,6 @@ async function serve(req, res) {
     return;
   }
 
-  console.log(new Date().toISOString(), req.url);
   streamContent(res, urlPath);
 }
 
@@ -99,6 +99,7 @@ async function readBody(request) {
 }
 
 async function streamContent(res, urlPath) {
+  console.log('new article', new Date().toISOString(), urlPath);
   res.writeHead(200);
   res.write(indexParts[0]);
 
@@ -110,29 +111,27 @@ async function streamContent(res, urlPath) {
     return;
   }
 
-  const filePath = getCachePath(urlPath);
-  const fileHandle = useCache ? createWriteStream(filePath) : null;
-  fileHandle?.write(`<!-- ${urlPath} -->\n\n`);
-
-  const stream = createCompletion(urlPath, '');
-  stream.on('response', (r) => {
-    r.on('data', (event) => {
-      const next = String(event).replace('data:', '').trim();
-      if (next !== '[DONE]') {
-        fileHandle?.write(next);
-        res.write(next);
-      }
-    });
-  
-    r.on('end', () => {
-      fileHandle?.end();
-      res.write(indexParts[1]);
-      res.end();
-    });
-  });
+  const stream = createStreamWithCache(urlPath, '');
+  stream.on('data', (next) => res.write(next));
+  stream.on('end', () => res.end(indexParts[1]));
 }
 
-function createCompletion(urlPath, suggestion) {
+function createStreamWithCache(urlPath, suggestion) {
+  const filePath = getCachePath(urlPath);
+  const stream = createCompletionRequest(urlPath, suggestion);
+
+  if (useCache) {
+    const fileHandle = createWriteStream(filePath);
+    fileHandle.write(`<!-- ${urlPath} -->\n\n`);
+  
+    stream.on('data', (next) => fileHandle.write(next));
+    stream.on('end', () => fileHandle.end());
+  }
+
+  return stream;
+}
+
+function createCompletionRequest(urlPath, suggestion) {
   const prompt = promptText.replace(
     "{urlPath}",
     urlPath.replace("/article/", "")
@@ -151,26 +150,26 @@ function createCompletion(urlPath, suggestion) {
     }
   });
   
+  console.log('STREAM', stream.getHeaders(), body);
   stream.write(JSON.stringify(body));
+  
+  const output = new EventEmitter();
+  stream.on('response', (r) => {
+    r.on('data', (event) => {
+      const next = String(event).replace('data:', '').trim();
+      if (next !== '[DONE]') {
+        output.emit('data', next);
+      }
+    });
+  
+    r.on('end', () => {
+      output.emit('end');
+    });
+  });
+
   stream.end();
 
-  return stream;
-}
-
-async function generate(urlPath, suggestion) {
-  const filePath = getCachePath(urlPath);
-  const fileHandle = createWriteStream(filePath);
-  fileHandle.write(`<!-- ${urlPath} -->\n\n`);
-
-  const stream = createCompletion(urlPath, suggestion);
-  stream.on('data', (event) => {
-    const next = String(event).replace('data:', '').trim();
-    fileHandle.write(next);
-  });
-
-  stream.on('end', () => {
-    fileHandle.end();
-  });
+  return output;
 }
 
 function getCachePath(url) {
