@@ -155,8 +155,8 @@ function createCompletionRequest(urlPath, suggestion) {
 
   const stream = request('https://api.openai.com/v1/chat/completions', {
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
+      'content-type': 'application/json',
+      'authorization': `Bearer ${apiKey}`,
     }
   });
   
@@ -193,7 +193,9 @@ function createCompletionRequest(urlPath, suggestion) {
     });
   });
 
-  stream.end(JSON.stringify(body));
+  const payload = JSON.stringify(body, null, 2);
+  log('payload: %s', payload);
+  stream.end(payload);
 
   return output;
 }
