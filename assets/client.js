@@ -57,6 +57,7 @@ function updateArticleContent(article, content) {
   tpl.innerHTML = content;
   tpl.content.querySelectorAll('script,style,link').forEach(t => t.remove());
   article.innerHTML = '';
+  article.classList.remove('whitespace-pre-wrap');
   article.append(tpl.content.cloneNode(true));
 }
 

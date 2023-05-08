@@ -168,13 +168,12 @@ function createCompletionRequest(urlPath, suggestion) {
     r.on('data', (event) => {
       if (useStream) {
         event.toString('utf8').split('\n\n').map(line => {
-          const next = line.trim().replace('data:', '');
+          const next = line.trim().replace('data: ', '').trim();
           
           if (!next || next === '[DONE]') {
             return;
           }
           
-          log('stream data: %s', next);
           const token = JSON.parse(next).choices[0].delta.content;
           if (token) {
             output.emit('data', token);
