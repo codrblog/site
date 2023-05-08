@@ -17,6 +17,7 @@ const CWD = process.cwd();
 const model = String(process.env.API_MODEL);
 const apiKey = String(process.env.API_KEY);
 const useCache = !Boolean(process.env.NO_CACHE);
+const useStream = !Boolean(process.env.API_STREAM);
 const contentMarker = '<!--%content%-->';
 const indexParts = readFileSync("./index.html", "utf8").split(contentMarker);
 const promptText = readFileSync("./prompt.txt", "utf8");
@@ -139,7 +140,7 @@ function createCompletionRequest(urlPath, suggestion) {
 
   const body = {
     model,
-    stream: true,
+    stream: useStream,
     messages: [{ role: "user", content: prompt }],
   };
 
@@ -154,14 +155,27 @@ function createCompletionRequest(urlPath, suggestion) {
 
   const output = new EventEmitter();
   stream.on('response', (r) => {
+    const chunks = [];
     r.on('data', (event) => {
-      const next = String(event).replace('data:', '').trim();
-      if (next !== '[DONE]') {
-        output.emit('data', next);
+      if (useStream) {
+        const next = String(event).replace('data:', '').trim();
+        if (next !== '[DONE]') {
+          output.emit('data', next);
+        }
+        return;
       }
+
+      chunks.push(event);
     });
   
     r.on('end', () => {
+      if (useStream) {
+        output.emit('end');
+        return;
+      }
+
+      const json = JSON.parse(Buffer.concat(chunks).toString('utf-8'));
+      output.emit('data', String(json?.choices.map((c) => c.message.content).join("")));
       output.emit('end');
     });
   });
