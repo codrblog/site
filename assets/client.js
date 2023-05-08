@@ -34,7 +34,7 @@ function showSuggestionsForm() {
   }
 }
 
-async function renderArticle(article, content) {
+async function renderArticle() {
   const article = document.querySelector('#content');
   const content = article.textContent;
   const response = await fetch('https://markdown.jsfn.run', { method: 'POST', mode: 'cors', body: content });
