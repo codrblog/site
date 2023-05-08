@@ -167,10 +167,13 @@ function createCompletionRequest(urlPath, suggestion) {
     
     r.on('data', (event) => {
       if (useStream) {
-        const next = String(event).replace('data:', '').trim();
-        if (next !== '[DONE]') {
-          output.emit('data', next);
+        const next = JSON.parse(event);
+        const token = next.choices[0].delta.content;
+        
+        if (token) {
+          output.emit('data', token);
         }
+        
         return;
       }
 
