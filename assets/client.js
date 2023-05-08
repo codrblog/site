@@ -17,11 +17,12 @@ function onAddSuggestion(event) {
 }
 
 function onLoad() {
+  document.querySelectorAll("article form, header form").forEach(f => f.addEventListener("submit", onSearch));
+  
   const isHomePage = location.pathname === "/";
-  document.querySelector("article form, header form").forEacH(f => f.addEventListener("submit", onSearch));
-
   if (!isHomePage) {
     showSuggestionsForm();
+    renderArticle();
   }
 }
 

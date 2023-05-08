@@ -35,7 +35,7 @@ async function serve(req, res) {
   }
 
   if (req.url === "/" || !req.url.replace('/article/', '')) {
-    res.end(indexParts.join('Welcome'));
+    res.end(indexParts.join(''));
     return;
   }
 
