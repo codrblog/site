@@ -163,6 +163,7 @@ function createCompletionRequest(urlPath, suggestion) {
   const output = new EventEmitter();
   stream.on('response', (r) => {
     const chunks = [];
+    
     r.on('data', (event) => {
       if (useStream) {
         const next = String(event).replace('data:', '').trim();
@@ -182,7 +183,12 @@ function createCompletionRequest(urlPath, suggestion) {
       }
 
       const json = JSON.parse(Buffer.concat(chunks).toString('utf-8'));
-      output.emit('data', String(json?.choices.map((c) => c.message.content).join("")));
+      log('completion', json);
+      
+      if (json?.choices) {
+        output.emit('data', String(json.choices.map((c) => c.message.content).join("")));
+      }
+
       output.emit('end');
     });
   });
