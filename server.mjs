@@ -87,7 +87,7 @@ async function serve(req, res) {
   }
 
   console.log(new Date().toISOString(), req.url);
-  streamContent(req, res, urlPath);
+  streamContent(res, urlPath);
 }
 
 async function readBody(request) {
@@ -98,7 +98,7 @@ async function readBody(request) {
   });
 }
 
-async function streamContent(req, res, urlPath) {
+async function streamContent(res, urlPath) {
   res.writeHead(200);
   res.write(indexParts[0]);
 
@@ -110,6 +110,7 @@ async function streamContent(req, res, urlPath) {
     return;
   }
 
+  const filePath = getCachePath(url);
   const fileHandle = useCache ? createWriteStream(filePath) : null;
   fileHandle?.write(`<!-- ${urlPath} -->\n\n`);
 
@@ -154,6 +155,7 @@ function createCompletion(urlPath, suggestion) {
 }
 
 async function generate(urlPath, suggestion) {
+  const filePath = getCachePath(url);
   const fileHandle = createWriteStream(filePath);
   fileHandle.write(`<!-- ${urlPath} -->\n\n`);
 
