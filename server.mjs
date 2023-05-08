@@ -166,10 +166,10 @@ function createCompletionRequest(urlPath, suggestion) {
     const chunks = [];
     
     r.on('data', (event) => {
-      log('data', event);
       
       if (useStream) {
-        const eventData = String(event).replace('data:', '').trim();
+        log('stream data: %s', event.toString('utf8'));
+        const eventData = event.toString('utf8').replace('data:', '').trim();
         if (eventData === '[DONE]') {
           return;
         }
