@@ -154,6 +154,7 @@ function createCompletionRequest(urlPath, suggestion) {
   };
 
   const stream = request('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
     headers: {
       'content-type': 'application/json',
       'authorization': `Bearer ${apiKey}`,
