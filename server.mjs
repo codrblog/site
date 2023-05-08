@@ -170,20 +170,16 @@ function createCompletionRequest(urlPath, suggestion) {
         event.toString('utf8').split('\n\n').map(line => {
           const next = line.trim().replace('data:', '');
           
-          log('stream data: %s', next);
-          
-          if (next === '[DONE]') {
+          if (!next || next === '[DONE]') {
             return;
           }
-
+          
+          log('stream data: %s', next);
           const token = JSON.parse(next).choices[0].delta.content;
           if (token) {
             output.emit('data', token);
           }
-          
-
         });
-        
         return;
       }
 
