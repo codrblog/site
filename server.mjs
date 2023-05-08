@@ -17,14 +17,19 @@ const CWD = process.cwd();
 const model = String(process.env.API_MODEL);
 const apiKey = String(process.env.API_KEY);
 const useCache = !Boolean(process.env.NO_CACHE);
-const useStream = !Boolean(process.env.API_STREAM);
+const useStream = Boolean(process.env.API_STREAM);
 const contentMarker = '<!--%content%-->';
 const indexParts = readFileSync("./index.html", "utf8").split(contentMarker);
 const promptText = readFileSync("./prompt.txt", "utf8");
 const assets = readdirSync(join(CWD, "assets"));
 
 function log(...args) {
-  console.log([`[${new Date().toISOString().slice(0, 19)}]`], ...args);
+  const time = `[${new Date().toISOString().slice(0, 19)}] `;
+  if (typeof args[0] === 'string') {
+    return console.log(time + args[0], ...args.slice(1));
+  }
+
+  console.log(time, ...args);
 }
 
 async function serve(req, res) {
@@ -71,6 +76,7 @@ async function serve(req, res) {
     }
 
     if (String(suggestion).trim().toLowerCase() === 'delete it') {
+      log('delete %s', suggestionPath);
       removeFromCache(suggestionPath);
       res.writeHead(204);
       res.end();
@@ -78,8 +84,8 @@ async function serve(req, res) {
     }
 
     res.end();
-    log("suggestion for %s", suggestionPath);
-    log(suggestion);
+    log("update %s", suggestionPath);
+    log("suggestion: ", suggestion);
 
     createCompletionWithCache(suggestionPath, suggestion);
     return;
