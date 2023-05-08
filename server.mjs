@@ -1,6 +1,7 @@
-import { createServer } from "http";
+import { createServer, request } from "http";
 import { join } from "path";
 import { createHash } from "crypto";
+import { spawnSync } from "child_process";
 import {
   readFileSync,
   writeFileSync,
@@ -8,19 +9,15 @@ import {
   unlinkSync,
   createReadStream,
   readdirSync,
+  createWriteStream,
 } from "fs";
-import { Configuration, OpenAIApi } from "openai";
-import { spawnSync } from "child_process";
 
 const CWD = process.cwd();
 const model = String(process.env.API_MODEL);
 const apiKey = String(process.env.API_KEY);
 const useCache = !Boolean(process.env.NO_CACHE);
-const configuration = new Configuration({ apiKey });
-const openai = new OpenAIApi(configuration);
-
-const index = readFileSync("./index.html", "utf8");
-const script = readFileSync("./codr.js", "utf8");
+const contentMarker = '<!--%content%-->';
+const indexParts = readFileSync("./index.html", "utf8").split(contentMarker);
 const promptText = readFileSync("./prompt.txt", "utf8");
 const assets = readdirSync(join(CWD, "assets"));
 
@@ -32,26 +29,23 @@ async function serve(req, res) {
   }
 
   if (assets.includes(req.url.slice(1))) {
+    res.setHeader('cache-control', 'max-age=604800');
     createReadStream(join(CWD, "assets", req.url.slice(1))).pipe(res);
     return;
   }
 
   if (req.url === "/" || !req.url.replace('/article/', '')) {
-    return renderContent(res, '');
-  }
-
-  if (req.url === "/codr.js") {
-    res.end(script);
+    res.end(indexParts.join('Welcome'));
     return;
   }
 
   if (req.url === "/@index") {
     const lines = readIndex().sort();
     const spacer = /_/g;
-    const content = '<h1>Index</h1><ul>' + 
+    const content = '<h1>Index</h1><nav><ul>' +
       lines.map(line => `<li><a href="${line}">${line.replace(spacer, ' ').replace("/article/", "")}</a></li>`)
-      .join('') + '</ul>';
-    
+      .join('') + '</ul></nav>';
+
     res.end(content);
     return;
   }
@@ -80,12 +74,11 @@ async function serve(req, res) {
     res.end();
     console.log("suggestion for %s", suggestionPath);
     console.log(suggestion);
-    
+
     generate(suggestionPath, suggestion);
     return;
   }
 
-  console.log(req.url);
   const urlPath = req.url;
   if (!urlPath.startsWith("/article/")) {
     res.writeHead(404);
@@ -93,19 +86,8 @@ async function serve(req, res) {
     return;
   }
 
-  renderContent(res, generate(urlPath));
-}
-
-async function renderContent(res, content) {
-  res.write(index);
-
-  try {
-    const html = await content;
-    res.end(`<template id="tpl">${html}</template>`);
-  } catch (error) {
-    console.log(error);
-    res.end('<template id="tpl">Failed to load article :(</template>');
-  }
+  console.log(new Date().toISOString(), req.url);
+  streamContent(req, res, urlPath);
 }
 
 async function readBody(request) {
@@ -116,67 +98,97 @@ async function readBody(request) {
   });
 }
 
-async function generate(urlPath, suggestion) {
-  const fromCache = readFromCache(urlPath);
+async function streamContent(req, res, urlPath) {
+  res.writeHead(200);
+  res.write(indexParts[0]);
 
-  if (useCache && !suggestion && fromCache) {
+  if (useCache && isCached(urlPath)) {
     console.log("from cache: %s", urlPath);
-    return fromCache;
+    res.write(readFromCache(urlPath));
+    res.write(indexParts[1]);
+    res.end();
+    return;
   }
 
-  let prompt = promptText.replace(
+  const fileHandle = useCache ? createWriteStream(filePath) : null;
+  fileHandle?.write(`<!-- ${urlPath} -->\n\n`);
+
+  const stream = createCompletion(urlPath);
+  stream.on('data', (event) => {
+    const next = String(event).replace('data:', '').trim();
+    if (next !== '[DONE]') {
+      fileHandle?.write(next);
+      res.write(next);
+    }
+  });
+
+  stream.on('end', () => {
+    fileHandle?.end();
+    res.write(indexParts[1]);
+    res.end();
+  });
+}
+
+function createCompletion(urlPath, suggestion) {
+  const prompt = promptText.replace(
     "{urlPath}",
     urlPath.replace("/article/", "")
-  );
+  ) + (suggestion ? "Consider this suggestion for an improved content: " + suggestion.slice(0, 255) : '');
 
-  if (suggestion) {
-    prompt += "Consider this suggestion for an improved content: " + suggestion.slice(0, 255);
-  }
-
-  const options = {
+  const body = {
     model,
+    stream: true,
     messages: [{ role: "user", content: prompt }],
   };
 
-  console.log("from AI start: %s %s", urlPath, new Date().toISOString());
-  const completion = await openai.createChatCompletion(options);
-  const responses = completion.data.choices
-    .map((c) => c.message.content)
-    .join("\n");
+  const stream = request('https://api.openai.com/v1/chat/completions', {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    }
+  });
+  stream.write(JSON.stringify(body));
+  stream.end();
 
-  console.log("from AI end: %s %s", urlPath, new Date().toISOString());
-  const article = `<!-- ${urlPath} -->\n\n${responses}`;
-
-  if (useCache) {
-    writeToCache(urlPath, article);
-  }
-
-  return article;
+  return stream;
 }
 
-function writeToCache(url, content) {
-  const filePath = join(CWD, "cache", sha256(url));
-  writeFileSync(filePath, content);
-  console.log("written to cache: %s", url);
+async function generate(urlPath, suggestion) {
+  const fileHandle = createWriteStream(filePath);
+  fileHandle.write(`<!-- ${urlPath} -->\n\n`);
+
+  const stream = createCompletion(urlPath, suggestion);
+  stream.on('data', (event) => {
+    const next = String(event).replace('data:', '').trim();
+    fileHandle.write(next);
+  });
+
+  stream.on('end', () => {
+    fileHandle.end();
+  });
+}
+
+function getCachePath(url) {
+  return join(CWD, "cache", sha256(url));
+}
+
+function isCached(url) {
+  const filePath = getCachePath(url);
+
+  return existsSync(filePath);
 }
 
 function removeFromCache(url) {
-  const filePath = join(CWD, "cache", sha256(url));
-  
+  const filePath = getCachePath(url);
+
   if (existsSync(filePath)) {
     unlinkSync(filePath);
-    console.log("removed from cache: %s", url);
   }
 }
 
 function readFromCache(url) {
-  const filePath = join(CWD, "cache", sha256(url));
-
-  if (existsSync(filePath)) {
-    return readFileSync(filePath, "utf8");
-  }
-
-  return "";
+  const filePath = getCachePath(url);
+  return readFileSync(filePath, "utf8");
 }
 
 function readIndex() {
@@ -197,8 +209,8 @@ function readIndex() {
   return lines;
 }
 
-createServer(serve).listen(process.env.PORT);
-
 function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
 }
+
+createServer(serve).listen(process.env.PORT);

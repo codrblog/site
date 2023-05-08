@@ -18,24 +18,16 @@ function onAddSuggestion(event) {
 
 function onLoad() {
   const isHomePage = location.pathname === "/";
-  document.querySelector("article form").addEventListener("submit", onSearch);
+  document.querySelector("article form, header form").forEacH(f => f.addEventListener("submit", onSearch));
 
-  showArticleContent();
-  
   if (!isHomePage) {
-    showHeaderSearchForm();
     showSuggestionsForm();
   }
 }
 
-function showHeaderSearchForm() {
-  const headerForm = document.querySelector("header form");
-  headerForm.addEventListener("submit", onSearch);
-  headerForm.classList.remove("hidden");
-}
-
 function showSuggestionsForm() {
   const suggestions = document.querySelector("#suggestion");
+
   if (suggestions) {
     suggestions.classList.remove("hidden");
     suggestions.querySelector('form')?.addEventListener("submit", onAddSuggestion);
