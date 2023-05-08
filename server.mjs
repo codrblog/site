@@ -166,8 +166,15 @@ function createCompletionRequest(urlPath, suggestion) {
     const chunks = [];
     
     r.on('data', (event) => {
+      log('data', event);
+      
       if (useStream) {
-        const next = JSON.parse(event);
+        const eventData = String(event).replace('data:', '').trim();
+        if (eventData === '[DONE]') {
+          return;
+        }
+
+        const next = JSON.parse(eventData);
         const token = next.choices[0].delta.content;
         
         if (token) {
