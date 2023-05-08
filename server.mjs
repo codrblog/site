@@ -110,11 +110,11 @@ async function streamContent(res, urlPath) {
     return;
   }
 
-  const filePath = getCachePath(url);
+  const filePath = getCachePath(urlPath);
   const fileHandle = useCache ? createWriteStream(filePath) : null;
   fileHandle?.write(`<!-- ${urlPath} -->\n\n`);
 
-  const stream = createCompletion(urlPath);
+  const stream = createCompletion(urlPath, '');
   stream.on('data', (event) => {
     const next = String(event).replace('data:', '').trim();
     if (next !== '[DONE]') {
@@ -155,7 +155,7 @@ function createCompletion(urlPath, suggestion) {
 }
 
 async function generate(urlPath, suggestion) {
-  const filePath = getCachePath(url);
+  const filePath = getCachePath(urlPath);
   const fileHandle = createWriteStream(filePath);
   fileHandle.write(`<!-- ${urlPath} -->\n\n`);
 
