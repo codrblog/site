@@ -34,41 +34,39 @@ function showSuggestionsForm() {
   }
 }
 
-function showArticleContent() {
-  const article = document.querySelector("main article");
-  const aiContent = document.querySelector("#tpl");
-  if (aiContent.content) {
-
-    const t = document.createElement('div');
-    [...aiContent.content.childNodes].forEach(c => t.appendChild(c));
-    renderArticle(article, t.innerText);
-    aiContent.remove();
-    return;
-  }
-
-  renderArticle(article, '');
-}
-
 async function renderArticle(article, content) {
+  const article = document.querySelector('#content');
+  const content = article.textContent;
   const response = await fetch('https://markdown.jsfn.run', { method: 'POST', mode: 'cors', body: content });
+  
   if (!response.ok) {
-    article.innerText = content;
     return;
   }
 
   const html = await response.text();
-  const tpl = document.createElement('template');
-  tpl.innerHTML = html;
-  tpl.content.querySelectorAll('script,style,link').forEach(t => t.remove());
-  const div = document.querySelector('#content');
-  div.append(tpl.content.cloneNode(true));
-  document.querySelector('#loading').classList.add('hidden');
+  
+  updateArticleContent(article, html);
+  updatePageTitle(article);
+  fixCodeBlocks(article);
+  fixLinks(article);
+}
 
+function updateArticleContent(article, content) {
+  const tpl = document.createElement('template');
+  tpl.innerHTML = content;
+  tpl.content.querySelectorAll('script,style,link').forEach(t => t.remove());
+  article.innerHTML = '';
+  article.append(tpl.content.cloneNode(true));
+}
+
+function updatePageTitle(article) {
   const title = article.querySelector("h1");
   if (title) {
     window.title = title.textContent.trim();
   }
+}
 
+function fixCodeBlocks(article) {
   [...article.querySelectorAll('code')].forEach(c => {
     c.innerText = c.innerText.trim();
 
@@ -76,7 +74,9 @@ async function renderArticle(article, content) {
       c.classList.add('bg-gray-800', 'text-white', 'rounded-lg', 'block');
     }
   });
+}
 
+function fixLinks(article) {
   [...article.querySelectorAll('a:not([href^=http])')].forEach(c => {
     const href = c.getAttribute('href');
     if (!href.startsWith('/article/')) {
