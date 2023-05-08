@@ -115,18 +115,20 @@ async function streamContent(res, urlPath) {
   fileHandle?.write(`<!-- ${urlPath} -->\n\n`);
 
   const stream = createCompletion(urlPath, '');
-  stream.on('data', (event) => {
-    const next = String(event).replace('data:', '').trim();
-    if (next !== '[DONE]') {
-      fileHandle?.write(next);
-      res.write(next);
-    }
-  });
-
-  stream.on('end', () => {
-    fileHandle?.end();
-    res.write(indexParts[1]);
-    res.end();
+  stream.on('response', (r) => {
+    r.on('data', (event) => {
+      const next = String(event).replace('data:', '').trim();
+      if (next !== '[DONE]') {
+        fileHandle?.write(next);
+        res.write(next);
+      }
+    });
+  
+    r.on('end', () => {
+      fileHandle?.end();
+      res.write(indexParts[1]);
+      res.end();
+    });
   });
 }
 
@@ -148,6 +150,7 @@ function createCompletion(urlPath, suggestion) {
       'Authorization': `Bearer ${apiKey}`,
     }
   });
+  
   stream.write(JSON.stringify(body));
   stream.end();
 
