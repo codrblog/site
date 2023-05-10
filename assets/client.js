@@ -90,8 +90,12 @@ function fixLinks(article) {
 }
 
 function linkHeadingsToArticles(article) {
+  const ignoredTitles = ['example', 'examples', 'conclusion', 'sources', 'solution', 'related links'];
   [...article.querySelectorAll('h1, h2, h3, h4, h5, h6')].forEach(heading => {
     const text = heading.textContent.trim();
+
+    if (ignoredTitles.includes(text.toLowerCase())) return;
+
     const link = document.createElement('a');
     link.href = getArticleUrl(text);
     link.innerText = '🔗';
