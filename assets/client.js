@@ -1,10 +1,11 @@
 function onSearch(event) {
   event.preventDefault();
   const query = event.target.querySelector("input").value;
+  window.location.href = getArticleUrl(query);
+}
 
-  window.location.href =
-    "/article/" +
-    encodeURI(query.toLowerCase().trim().split(/\W/).filter(Boolean).join("_"));
+function getArticleUrl(text) {
+  return "/article/" + encodeURI(text.toLowerCase().trim().split(/\W/).filter(Boolean).join("_"))
 }
 
 function onAddSuggestion(event) {
@@ -18,7 +19,7 @@ function onAddSuggestion(event) {
 
 function onLoad() {
   document.querySelectorAll("article form, header form").forEach(f => f.addEventListener("submit", onSearch));
-  
+
   const isHomePage = location.pathname === "/";
   if (!isHomePage) {
     showSuggestionsForm();
@@ -39,17 +40,18 @@ async function renderArticle() {
   const article = document.querySelector('#content');
   const content = article.textContent;
   const response = await fetch('https://markdown.jsfn.run', { method: 'POST', mode: 'cors', body: content });
-  
+
   if (!response.ok) {
     return;
   }
 
   const html = await response.text();
-  
+
   updateArticleContent(article, html);
   updatePageTitle(article);
   fixCodeBlocks(article);
   fixLinks(article);
+  linkHeadingsToArticles(article);
 }
 
 function updateArticleContent(article, content) {
@@ -84,6 +86,18 @@ function fixLinks(article) {
     if (!href.startsWith('/article/')) {
       c.href = '/article/' + href;
     }
+  });
+}
+
+function linkHeadingsToArticles(article) {
+  [...article.querySelectorAll('h1, h2, h3, h4, h5, h6')].forEach(heading => {
+    const text = heading.textContent.trim();
+    const link = document.createElement('a');
+    link.href = getArticleUrl(text);
+    link.innerText = '🔗';
+    link.title = 'Read more about ' + text;
+
+    heading.append(link);
   });
 }
 
