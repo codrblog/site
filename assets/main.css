@@ -9,7 +9,6 @@
 .article {
   font-family: sans-serif;
   word-break: break-word;
-  white-space: pre-line;
 }
 
 .article table {
@@ -47,7 +46,21 @@
   color: var(--primary);
   font-weight: 700;
   line-height: 1.25;
-  margin-bottom: 26px;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.article h1 {
+  font-size: 2rem;
+}
+
+.article h2 {
+  font-size: 1.6rem;
+  margin-top: 1rem;
+}
+
+.article h3 {
+  font-size: 1.25rem;
 }
 
 .article h1 strong,
@@ -84,18 +97,6 @@
   margin-bottom: 0px;
 }
 
-.article h1 {
-  font-size: 33px;
-}
-
-.article h2 {
-  font-size: 21px;
-  margin-top: 15px;
-}
-
-.article h3 {
-  font-size: 17px;
-}
 
 .article p {
   font-size: 1rem;
@@ -133,20 +134,19 @@
 
 .article code,
 .article pre {
-  border-radius: 3px;
+  border-radius: 6px;
   color: #fff;
-  background-color: var(--primary) !important;
-  font-size: 15px !important;
+  background-color: var(--primary);
+  font-size: 1rem;
 }
 
 .article code {
-  padding: 3px 6px;
+  padding: 0.25rem 1rem;
 }
 
 .article pre {
   overflow: auto;
-  padding: 16px;
-  margin: 35px 0;
+  padding: 1rem;
   box-sizing: border-box;
 }
 
