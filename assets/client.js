@@ -99,6 +99,16 @@ function fixLinks(article) {
   });
 }
 
+function wrapTables(article) {
+  [...article.querySelectorAll("table")].forEach((c) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'table';
+
+    c.parentNode.insertBefore(wrapper, c);
+    wrapper.appendChild(c);
+  });
+}
+
 function linkHeadingsToArticles(article) {
   const ignoredTitles = [
     "example",
