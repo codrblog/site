@@ -100,6 +100,7 @@ function linkHeadingsToArticles(article) {
     link.href = getArticleUrl(text);
     link.innerText = '🔗';
     link.title = 'Read more about ' + text;
+    link.className = 'inline-block ml-4'
 
     heading.append(link);
   });
