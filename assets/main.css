@@ -10,6 +10,7 @@
 }
 
 html { font-size: 16px; }
+input { color: #000 }
 
 .p-2 { padding: var(--gap-2); }
 .p-4 { padding: var(--gap-4); }
@@ -33,6 +34,7 @@ html { font-size: 16px; }
 .mb-2 { margin-bottom: var(--gap-2); }
 .mt-10 { margin-top: var(--gap-10); }
 .w-full { width: 100%; }
+.w-article { max-width: 64rem; }
 
 .bg-primary { background-color: var(--primary); }
 .text-primary { color: var(--primary); }
@@ -41,6 +43,7 @@ html { font-size: 16px; }
 .bg-gray-100 { background-color: var(--gray-100); }
 
 .flex { display: flex; }
+.flex-wrap { flex-wrap: wrap; }
 .items-center { align-items: center; }
 
 .rounded-lg { border-radius: 0.5rem; }
