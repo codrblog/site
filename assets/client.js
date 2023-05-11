@@ -87,10 +87,6 @@ function updatePageTitle(article) {
 function fixCodeBlocks(article) {
   [...article.querySelectorAll("code")].forEach((c) => {
     c.innerText = c.innerText.trim();
-
-    if (c.parentNode.nodeName === "PRE") {
-      c.classList.add("bg-gray-800", "text-white", "rounded-lg", "block");
-    }
   });
 }
 
@@ -111,8 +107,9 @@ function linkHeadingsToArticles(article) {
     "sources",
     "solution",
     "related links",
+    "related content",
   ];
-  [...article.querySelectorAll("h1, h2, h3, h4, h5, h6")].forEach((heading) => {
+  [...article.querySelectorAll("h2, h3, h4, h5, h6")].forEach((heading) => {
     const text = heading.textContent.trim();
 
     if (ignoredTitles.includes(text.toLowerCase())) return;

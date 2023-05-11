@@ -6,6 +6,18 @@
   font-size: 16px;
 }
 
+.bg-primary {
+  background-color: var(--primary);
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.border-primary {
+  border-color: var(--primary);
+}
+
 .article {
   font-family: sans-serif;
   word-break: break-word;
@@ -73,7 +85,7 @@
 }
 
 .article li {
-  margin-bottom: 10px;
+  margin-bottom: 0.6rem;
 }
 
 .article li:last-child {
@@ -88,7 +100,7 @@
 .article p,
 .article ul,
 .article ol {
-  margin-bottom: 25px;
+  margin-bottom: 1.5rem;
 }
 
 .article p:last-child,
@@ -96,7 +108,6 @@
 .article ol:last-child {
   margin-bottom: 0px;
 }
-
 
 .article p {
   font-size: 1rem;
@@ -132,27 +143,27 @@
   list-style: decimal inside;
 }
 
-.article code,
-.article pre {
-  border-radius: 6px;
-  color: #fff;
-  background-color: var(--primary);
-  font-size: 1rem;
-}
-
 .article code {
-  padding: 0.25rem 1rem;
+  padding: 0.25rem 0.5rem;
+  display: inline-box;
+  font-weight: bold;
 }
 
 .article pre {
   overflow: auto;
   padding: 1rem;
   box-sizing: border-box;
+  border-radius: 6px;
+  color: #fff;
+  background-color: var(--primary);
+  font-size: 1rem;
 }
 
 .article pre code {
   padding: 0;
+  display: block;
   background: none;
+  font-weight: normal;
 }
 
 .article code {
@@ -162,11 +173,11 @@
 }
 
 .article blockquote {
-  padding: 20px;
+  padding: 1.25rem;
   background-color: var(--gray-100);
   border: 1px solid var(--primary);
-  margin-bottom: 35px;
-  border-radius: 4px;
+  margin-bottom: 1rem;
+  border-radius: 6px;
 }
 
 .article blockquote p {
