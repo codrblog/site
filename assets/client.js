@@ -31,6 +31,7 @@ function onLoad() {
   updatePrimaryColor();
 
   const isHomePage = location.pathname === "/";
+  
   if (!isHomePage) {
     showSuggestionsForm();
     renderArticle();
@@ -73,9 +74,7 @@ function showSuggestionsForm() {
   }
 
   suggestions.classList.remove("hidden");
-  suggestions
-    .querySelector("form")
-    ?.addEventListener("submit", onAddSuggestion);
+  suggestions.addEventListener("submit", onAddSuggestion);
 }
 
 async function renderArticle() {
