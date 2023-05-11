@@ -133,7 +133,7 @@ function createCompletionWithCache(urlPath, suggestion) {
   if (useCache) {
     const fileHandle = createWriteStream(filePath);
     fileHandle.write(`<!-- ${urlPath} -->\n\n`);
-  
+
     stream.on('data', (next) => fileHandle.write(next));
     stream.on('end', () => fileHandle.end());
   }
@@ -160,20 +160,20 @@ function createCompletionRequest(urlPath, suggestion) {
       'authorization': `Bearer ${apiKey}`,
     }
   });
-  
+
   const output = new EventEmitter();
   stream.on('response', (r) => {
     const chunks = [];
-    
+
     r.on('data', (event) => {
       if (useStream) {
         event.toString('utf8').split('\n\n').map(line => {
           const next = line.trim().replace('data: ', '').trim();
-          
+
           if (!next || next === '[DONE]') {
             return;
           }
-          
+
           const token = JSON.parse(next).choices[0].delta.content;
           if (token) {
             output.emit('data', token);
@@ -184,7 +184,7 @@ function createCompletionRequest(urlPath, suggestion) {
 
       chunks.push(event);
     });
-  
+
     r.on('end', () => {
       if (useStream) {
         output.emit('end');
@@ -193,7 +193,7 @@ function createCompletionRequest(urlPath, suggestion) {
 
       const json = JSON.parse(Buffer.concat(chunks).toString('utf-8'));
       log('completion', json);
-      
+
       if (json?.choices) {
         output.emit('data', String(json.choices.map((c) => c.message.content).join("")));
       }
@@ -242,7 +242,6 @@ function readIndex() {
     .join("\n");
 
   const lines = headers
-    .trim()
     .split("\n")
     .filter((s) => Boolean(s.trim()) && s.startsWith("<!--"))
     .map((s) => s.replace("<!--", "").replace("-->", "").trim().slice(0, 255));

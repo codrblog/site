@@ -5,7 +5,10 @@ function onSearch(event) {
 }
 
 function getArticleUrl(text) {
-  return "/article/" + encodeURI(text.toLowerCase().trim().split(/\W/).filter(Boolean).join("_"))
+  return (
+    "/article/" +
+    encodeURI(text.toLowerCase().trim().split(/\W/).filter(Boolean).join("_"))
+  );
 }
 
 function onAddSuggestion(event) {
@@ -14,11 +17,16 @@ function onAddSuggestion(event) {
   const suggestion = form.querySelector("input").value;
 
   form.innerHTML = "Thank you!";
-  fetch("/@suggestion" + location.pathname, { method: "POST", body: suggestion });
+  fetch("/@suggestion" + location.pathname, {
+    method: "POST",
+    body: suggestion,
+  });
 }
 
 function onLoad() {
-  document.querySelectorAll("article form, header form").forEach(f => f.addEventListener("submit", onSearch));
+  document
+    .querySelectorAll("article form, header form")
+    .forEach((f) => f.addEventListener("submit", onSearch));
 
   const isHomePage = location.pathname === "/";
   if (!isHomePage) {
@@ -32,14 +40,20 @@ function showSuggestionsForm() {
 
   if (suggestions) {
     suggestions.classList.remove("hidden");
-    suggestions.querySelector('form')?.addEventListener("submit", onAddSuggestion);
+    suggestions
+      .querySelector("form")
+      ?.addEventListener("submit", onAddSuggestion);
   }
 }
 
 async function renderArticle() {
-  const article = document.querySelector('#content');
+  const article = document.querySelector("#content");
   const content = article.textContent;
-  const response = await fetch('https://markdown.jsfn.run', { method: 'POST', mode: 'cors', body: content });
+  const response = await fetch("https://markdown.jsfn.run", {
+    method: "POST",
+    mode: "cors",
+    body: content,
+  });
 
   if (!response.ok) {
     return;
@@ -55,11 +69,11 @@ async function renderArticle() {
 }
 
 function updateArticleContent(article, content) {
-  const tpl = document.createElement('template');
+  const tpl = document.createElement("template");
   tpl.innerHTML = content;
-  tpl.content.querySelectorAll('script,style,link').forEach(t => t.remove());
-  article.innerHTML = '';
-  article.classList.remove('whitespace-pre-wrap');
+  tpl.content.querySelectorAll("script,style,link").forEach((t) => t.remove());
+  article.innerHTML = "";
+  article.classList.remove("whitespace-pre-wrap");
   article.append(tpl.content.cloneNode(true));
 }
 
@@ -71,37 +85,43 @@ function updatePageTitle(article) {
 }
 
 function fixCodeBlocks(article) {
-  [...article.querySelectorAll('code')].forEach(c => {
+  [...article.querySelectorAll("code")].forEach((c) => {
     c.innerText = c.innerText.trim();
 
-    if (c.parentNode.nodeName === 'PRE') {
-      c.classList.add('bg-gray-800', 'text-white', 'rounded-lg', 'block');
+    if (c.parentNode.nodeName === "PRE") {
+      c.classList.add("bg-gray-800", "text-white", "rounded-lg", "block");
     }
   });
 }
 
 function fixLinks(article) {
-  [...article.querySelectorAll('a:not([href^=http])')].forEach(c => {
-    const href = c.getAttribute('href');
-    if (!href.startsWith('/article/')) {
-      c.href = '/article/' + href;
+  [...article.querySelectorAll("a:not([href^=http])")].forEach((c) => {
+    const href = c.getAttribute("href");
+    if (!href.startsWith("/article/")) {
+      c.href = "/article/" + href;
     }
   });
 }
 
 function linkHeadingsToArticles(article) {
-  const ignoredTitles = ['example', 'examples', 'conclusion', 'sources', 'solution', 'related links'];
-  [...article.querySelectorAll('h1, h2, h3, h4, h5, h6')].forEach(heading => {
+  const ignoredTitles = [
+    "example",
+    "examples",
+    "conclusion",
+    "sources",
+    "solution",
+    "related links",
+  ];
+  [...article.querySelectorAll("h1, h2, h3, h4, h5, h6")].forEach((heading) => {
     const text = heading.textContent.trim();
 
     if (ignoredTitles.includes(text.toLowerCase())) return;
 
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = getArticleUrl(text);
-    link.innerText = '🔗';
-    link.title = 'Read more about ' + text;
-    link.className = 'inline-block ml-4'
-
+    link.innerText = text;
+    link.title = "Read more about " + text;
+    heading.innerHTML = "";
     heading.append(link);
   });
 }

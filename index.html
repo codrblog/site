@@ -6,15 +6,24 @@
     <link rel="manifest" href="/manifest.json" />
 
     <title>CODR</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" />
-    <link rel="stylesheet" href="https://unpkg.com/@tailwindcss/typography@0.5.0/dist/typography.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@tailwindcss/typography@0.5.0/dist/typography.min.css"
+    />
     <script src="/client.js" defer async></script>
+    <link rel="stylesheet" href="/main.css" />
     <link rel="icon" type="image/png" href="/favicon.png" />
   </head>
 
   <body class="flex flex-col h-screen bg-gray-100">
     <main class="max-w-5xl mx-auto w-full">
-      <header class="bg-white border border-t-0 border-b-0 px-10 py-2 md:flex flex-wrap md:justify-between items-center">
+      <header
+        class="bg-white border border-t-0 border-b-0 px-10 py-2 md:flex flex-wrap md:justify-between items-center"
+      >
         <h1 class="text-2xl font-semibold text-gray-900 mb-2 md:mb-0">
           <a href="/">CODR - The infinite blog</a>
         </h1>
@@ -30,12 +39,19 @@
           <button
             class="bg-blue-600 leading-4 rounded-r border border-blue-600 text-white font-bold py-2 px-4 rounded-r focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             type="submit"
-          >OK</button>
+          >
+            OK
+          </button>
         </form>
       </header>
       <article class="border border-t-0 rounded-b bg-white p-10">
-        <div class="prose lg:prose-l whitespace-pre-wrap" id="content"><!--%content%--></div>
-        <form class="bg-gray-100 rounded-lg p-6 flex items-center mt-10" id="search">
+        <div class="prose whitespace-pre-wrap" id="content">
+          <!--%content%-->
+        </div>
+        <form
+          class="bg-gray-100 rounded-lg p-6 flex items-center mt-10"
+          id="search"
+        >
           <div class="flex-shrink-0 mr-4">
             <svg
               class="h-6 w-6 text-gray-400"
@@ -59,7 +75,7 @@
             placeholder="Ask me anything 😀"
             aria-label="Ask me anything"
           />
-        </form>        
+        </form>
       </article>
       <footer>
         <nav class="text-gray-400 block text-center py-6">
@@ -67,17 +83,25 @@
         </nav>
       </footer>
     </main>
-    <aside id="suggestion" class="border border-b-0 bg-white rounded-t mt-6 max-w-5xl mx-auto px-10 py-6 w-full flex-grow hidden">
+    <aside
+      id="suggestion"
+      class="border border-b-0 bg-white rounded-t mt-6 max-w-5xl mx-auto px-10 py-6 w-full flex-grow hidden"
+    >
       <form>
         <label for="suggestion" class="block mb-2"
           >Suggest an improvement on this page:</label
         >
         <div class="flex items-center">
-          <input class="w-full p-2 border border-gray-300 rounded-l" maxlength="255" />
+          <input
+            class="w-full p-2 border border-gray-300 rounded-l"
+            maxlength="255"
+          />
           <button
             type="submit"
             class="px-4 py-2 bg-blue-600 text-white rounded-r"
-          >OK</button>
+          >
+            OK
+          </button>
         </div>
       </form>
     </aside>
