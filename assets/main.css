@@ -91,11 +91,12 @@ html { font-size: 16px; }
 
 .article h1 {
   font-size: 2rem;
+  margin-bottom: 2rem;
 }
 
 .article h2 {
   font-size: 1.6rem;
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 
 .article h3 {
@@ -181,7 +182,6 @@ html { font-size: 16px; }
   margin: 1rem 0;
   box-sizing: border-box;
   border-radius: 6px;
-  color: #fff;
   background-color: #e5e7eb;
 }
 
