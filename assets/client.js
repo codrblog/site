@@ -51,7 +51,6 @@ function updatePrimaryColor() {
     '#4CAF50',
     '#8BC34A',
     '#CDDC39',
-    '#FFEB3B',
     '#FFC107',
     '#FF9800',
     '#FF5722',
@@ -125,7 +124,8 @@ function fixCodeBlocks(article) {
 
 function fixLinks(article) {
   [...article.querySelectorAll("a:not([href^=http])")].forEach((c) => {
-    const href = c.getAttribute("href");
+    const href = c.getAttribute("href").replace('../', '');
+    
     if (!href.startsWith("/article/")) {
       c.href = "/article/" + href;
     }

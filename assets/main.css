@@ -1,5 +1,5 @@
 :root {
-  --primary: rgba(103, 58, 183, 1);
+  --primary: #333;
   --gray-500: rgba(107, 114, 128, 1);
   --gray-100: rgba(243, 244, 246, 1);
   --gap-2: 0.5rem;
@@ -8,8 +8,6 @@
   --gap-8: 2rem;
   --gap-10: 2.5rem;
 }
-
-
 
 html { font-size: 16px; }
 input { color: #000 }
@@ -52,7 +50,7 @@ input { color: #000 }
 
 .rounded-lg { border-radius: 0.5rem; }
 
-.article {
+body {
   font-family: sans-serif;
   word-break: break-word;
 }
