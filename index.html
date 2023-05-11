@@ -49,35 +49,32 @@
         </div>
       </article>
       <footer>
+        <form id="suggestion">
+          <label for="suggestion" class="block mb-2"
+            >Suggest an improvement on this page:</label
+          >
+          <div class="flex items-center">
+            <input
+              class="w-full p-2 border border-gray-300 rounded-l"
+              maxlength="255"
+            />
+            <button
+              type="submit"
+              class="px-4 py-2 bg-primary text-white rounded-r"
+            >
+              OK
+            </button>
+          </div>
+        </form>
         <nav class="text-gray-400 block text-center py-6">
           <a href="/@index">Site index</a>
         </nav>
       </footer>
     </main>
-    <aside
-      id="suggestion"
-      class="w-full w-article mx-auto flex-grow hidden"
-    >
-      <form>
-        <label for="suggestion" class="block mb-2"
-          >Suggest an improvement on this page:</label
-        >
-        <div class="flex items-center">
-          <input
-            class="w-full p-2 border border-gray-300 rounded-l"
-            maxlength="255"
-          />
-          <button
-            type="submit"
-            class="px-4 py-2 bg-primary text-white rounded-r"
-          >
-            OK
-          </button>
-        </div>
-      </form>
+    <aside id="suggestion" class="w-full w-article mx-auto flex-grow hidden">
     </aside>
     <form
-      class="bg-gray-100 rounded-lg p-6 flex items-center mt-10"
+      class="bg-gray-100 flex items-center p-6"
       id="search"
     >
       <div class="flex-shrink-0 mr-4">

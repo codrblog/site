@@ -28,6 +28,8 @@ function onLoad() {
     .querySelectorAll("article form, header form")
     .forEach((f) => f.addEventListener("submit", onSearch));
 
+  updatePrimaryColor();
+
   const isHomePage = location.pathname === "/";
   if (!isHomePage) {
     showSuggestionsForm();
@@ -35,15 +37,46 @@ function onLoad() {
   }
 }
 
+function updatePrimaryColor() {
+  const colors = [
+    '#F44336',
+    '#E91E63',
+    '#9C27B0',
+    '#673AB7',
+    '#3F51B5',
+    '#2196F3',
+    '#03A9F4',
+    '#00BCD4',
+    '#009688',
+    '#4CAF50',
+    '#8BC34A',
+    '#CDDC39',
+    '#FFEB3B',
+    '#FFC107',
+    '#FF9800',
+    '#FF5722',
+    '#795548',
+    '#607D8B',
+  ];
+  
+  const index = 1 + Math.floor(Math.random() * 1000) % colors.length - 1;
+  const color = colors[index];
+  const style = document.createElement('style');
+  style.textContent = ':root { --primary: ' + color + '; }';
+  document.head.appendChild(style);
+}
+
 function showSuggestionsForm() {
   const suggestions = document.querySelector("#suggestion");
 
-  if (suggestions) {
-    suggestions.classList.remove("hidden");
-    suggestions
-      .querySelector("form")
-      ?.addEventListener("submit", onAddSuggestion);
+  if (!suggestions) {
+    return;
   }
+
+  suggestions.classList.remove("hidden");
+  suggestions
+    .querySelector("form")
+    ?.addEventListener("submit", onAddSuggestion);
 }
 
 async function renderArticle() {
