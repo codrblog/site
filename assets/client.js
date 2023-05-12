@@ -25,7 +25,7 @@ function onAddSuggestion(event) {
 
 function onLoad() {
   document
-    .querySelectorAll("article form, header form")
+    .querySelectorAll("#search")
     .forEach((f) => f.addEventListener("submit", onSearch));
 
   updatePrimaryColor();
@@ -40,29 +40,29 @@ function onLoad() {
 
 function updatePrimaryColor() {
   const colors = [
-    '#F44336',
-    '#E91E63',
-    '#9C27B0',
-    '#673AB7',
-    '#3F51B5',
-    '#2196F3',
-    '#03A9F4',
-    '#00BCD4',
-    '#009688',
-    '#4CAF50',
-    '#8BC34A',
-    '#CDDC39',
-    '#FFC107',
-    '#FF9800',
-    '#FF5722',
-    '#795548',
-    '#607D8B',
+    "#F44336",
+    "#E91E63",
+    "#9C27B0",
+    "#673AB7",
+    "#3F51B5",
+    "#2196F3",
+    "#03A9F4",
+    "#00BCD4",
+    "#009688",
+    "#4CAF50",
+    "#8BC34A",
+    "#CDDC39",
+    "#FFC107",
+    "#FF9800",
+    "#FF5722",
+    "#795548",
+    "#607D8B",
   ];
 
-  const index = 1 + Math.floor(Math.random() * 1000) % colors.length - 1;
+  const index = 1 + (Math.floor(Math.random() * 1000) % colors.length) - 1;
   const color = colors[index];
-  const style = document.createElement('style');
-  style.textContent = ':root { --primary: ' + color + '; }';
+  const style = document.createElement("style");
+  style.textContent = ":root { --primary: " + color + "; }";
   document.head.appendChild(style);
 }
 
@@ -81,7 +81,7 @@ async function renderArticle() {
   const article = document.querySelector("#content");
   const content = article.innerHTML;
 
-  if (content.includes('<!-- html ready -->')) {
+  if (content.includes("<!-- html ready -->")) {
     return;
   }
 
@@ -128,7 +128,7 @@ function fixCodeBlocks(article) {
 
 function fixLinks(article) {
   [...article.querySelectorAll("a:not([href^=http])")].forEach((c) => {
-    const href = c.getAttribute("href").replace('../', '');
+    const href = c.getAttribute("href").replace("../", "");
 
     if (!href.startsWith("/article/")) {
       c.href = "/article/" + href;
@@ -138,8 +138,8 @@ function fixLinks(article) {
 
 function wrapTables(article) {
   [...article.querySelectorAll("table")].forEach((c) => {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'table';
+    const wrapper = document.createElement("div");
+    wrapper.className = "table";
 
     c.parentNode.insertBefore(wrapper, c);
     wrapper.appendChild(c);

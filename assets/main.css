@@ -55,6 +55,12 @@ body {
   word-break: break-word;
 }
 
+header h1 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: bold;
+}
+
 .article table {
   font-size: 0.75rem;
   line-height: 1.5;

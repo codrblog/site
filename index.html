@@ -17,27 +17,15 @@
 
   <body>
     <main>
-      <header
-        class="bg-primary px-6 py-2 md:flex md:justify-between flex-wrap items-center"
-      >
-        <h1 class="text-2xl font-semibold text-white">
+      <header class="bg-primary px-8 py-2">
+        <h1>
           <a href="/">CODR - The infinite blog</a>
         </h1>
-        <form class="flex" action="/" method="get">
-          <label for="search-input" class="sr-only">Search</label>
-          <input
-            name="search"
-            id="search-input"
-            class="leading-4 py-2 px-4 rounded"
-            placeholder="Search..."
-          />
-          <button class="sr-only" type="submit">Go</button>
-        </form>
       </header>
-      <article class="p-10">
+      <article class="p-8">
         <div
-          class="article w-article mx-auto w-full whitespace-pre-wrap"
           id="content"
+          class="article w-article mx-auto w-full whitespace-pre-wrap"
         >
           <!--%content%-->
         </div>
@@ -45,7 +33,7 @@
       <footer class="w-article mx-auto">
         <form id="suggestion" class="hidden">
           <label for="suggestion" class="block mb-2"
-            >Suggest an improvement on this page:</label
+            >Suggest an improvement for this article:</label
           >
           <input
             class="w-full p-2 border border-gray-300 rounded"
@@ -54,14 +42,10 @@
           <button type="submit" class="sr-only">OK</button>
         </form>
         <nav class="text-gray-400 block text-center py-6">
-          <a href="/@index">Site index</a>
+          <a href="/@index">Index</a>
         </nav>
       </footer>
     </main>
-    <aside
-      id="suggestion"
-      class="w-full w-article mx-auto flex-grow hidden"
-    ></aside>
     <form class="bg-gray-100 flex items-center p-6" id="search">
       <input
         class="block px-6 w-full h-16 font-semibold text-xl rounded-lg focus:outline-none"
