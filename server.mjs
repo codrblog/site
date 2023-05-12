@@ -258,7 +258,8 @@ const htmlMarker = '<!-- html ready -->';
 
 async function readFromCache(url) {
   const filePath = getCachePath(url);
-  return readFileSync(filePath, "utf8");
+  const content = readFileSync(filePath, "utf8");
+  return content.replace(/^<\!-- .+? -->/, '');
 }
 
 function readIndex() {
