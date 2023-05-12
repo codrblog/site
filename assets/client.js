@@ -79,7 +79,7 @@ function showSuggestionsForm() {
 
 async function renderArticle() {
   const article = document.querySelector("#content");
-  const content = article.textContent;
+  const content = article.innerHTML;
 
   if (content.includes('<!-- html ready -->')) {
     return;
