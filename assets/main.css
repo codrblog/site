@@ -10,7 +10,19 @@
 }
 
 html { font-size: 16px; }
-input { color: #000 }
+input { color: #333 }
+body {
+  font-family: sans-serif;
+  word-break: break-word;
+}
+
+header h1 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: bold;
+  color: white;
+}
+
 
 .p-2 { padding: var(--gap-2); }
 .p-4 { padding: var(--gap-4); }
@@ -49,17 +61,6 @@ input { color: #000 }
 .items-center { align-items: center; }
 
 .rounded-lg { border-radius: 0.5rem; }
-
-body {
-  font-family: sans-serif;
-  word-break: break-word;
-}
-
-header h1 {
-  font-size: 1.5rem;
-  line-height: 2rem;
-  font-weight: bold;
-}
 
 .article table {
   font-size: 0.75rem;
