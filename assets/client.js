@@ -31,7 +31,7 @@ function onLoad() {
   updatePrimaryColor();
 
   const isHomePage = location.pathname === "/";
-  
+
   if (!isHomePage) {
     showSuggestionsForm();
     renderArticle();
@@ -58,7 +58,7 @@ function updatePrimaryColor() {
     '#795548',
     '#607D8B',
   ];
-  
+
   const index = 1 + Math.floor(Math.random() * 1000) % colors.length - 1;
   const color = colors[index];
   const style = document.createElement('style');
@@ -80,7 +80,12 @@ function showSuggestionsForm() {
 async function renderArticle() {
   const article = document.querySelector("#content");
   const content = article.textContent;
-  const response = await fetch("https://markdown.jsfn.run", {
+
+  if (content.includes('<!-- html ready -->')) {
+    return;
+  }
+
+  const response = await fetch("https://markdown.jsfn.run?html=1", {
     method: "POST",
     mode: "cors",
     body: content,
@@ -124,7 +129,7 @@ function fixCodeBlocks(article) {
 function fixLinks(article) {
   [...article.querySelectorAll("a:not([href^=http])")].forEach((c) => {
     const href = c.getAttribute("href").replace('../', '');
-    
+
     if (!href.startsWith("/article/")) {
       c.href = "/article/" + href;
     }

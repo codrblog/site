@@ -6,6 +6,7 @@ import { createHash } from "crypto";
 import { spawnSync } from "child_process";
 import {
   readFileSync,
+  writeFileSync,
   existsSync,
   unlinkSync,
   createReadStream,
@@ -115,7 +116,7 @@ async function streamContent(res, urlPath) {
 
   if (useCache && isCached(urlPath)) {
     log("from cache: %s", urlPath);
-    res.write(readFromCache(urlPath));
+    res.write(await readFromCache(urlPath));
     res.write(indexParts[1]);
     res.end();
     return;
@@ -135,10 +136,36 @@ function createCompletionWithCache(urlPath, suggestion) {
     fileHandle.write(`<!-- ${urlPath} -->\n\n`);
 
     stream.on('data', (next) => fileHandle.write(next));
-    stream.on('end', () => fileHandle.end());
+    stream.on('end', () => {
+      fileHandle.end();
+      renderAndUpdateCache(urlPath);
+    });
   }
 
   return stream;
+}
+
+async function renderAndUpdateCache(urlPath) {
+  const remote = request("https://markdown.jsfn.run?html=1", {
+    method: "POST",
+  });
+
+  remote.on('response', (s) => {
+    if (s.statusCode !== 200) {
+      return;
+    }
+
+    const chunks = [];
+    s.on('data', data => chunks.push(data));
+    s.on('end', () => {
+      const html = Buffer.concat(chunks).toString('utf8');
+      writeFileSync(getCachePath(urlPath), htmlMarker + html);
+    });
+  });
+
+  const cacheContent = readFromCache(urlPath);
+  remote.write(cacheContent);
+  remote.end();
 }
 
 function createCompletionRequest(urlPath, suggestion) {
@@ -227,7 +254,9 @@ function removeFromCache(url) {
   }
 }
 
-function readFromCache(url) {
+const htmlMarker = '<!-- html ready -->';
+
+async function readFromCache(url) {
   const filePath = getCachePath(url);
   return readFileSync(filePath, "utf8");
 }
