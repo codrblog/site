@@ -55,7 +55,7 @@ async function serve(req, res) {
     const lines = readIndex().sort();
     const spacer = /_/g;
     const content = '<h1>Index</h1><nav><ul>' +
-      lines.map(line => `<li><a href="${line}">${line.replace(spacer, ' ').replace("/article/", "")}</a></li>`)
+      lines.filter(Boolean).map(line => `<li><a href="${line}">${line.replace(spacer, ' ').replace("/article/", "")}</a></li>`)
       .join('') + '</ul></nav>';
 
     res.end(content);
