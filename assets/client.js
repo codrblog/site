@@ -107,8 +107,9 @@ function updateArticleContent(article, content) {
   const tpl = document.createElement("template");
   tpl.innerHTML = content;
   tpl.content.querySelectorAll("script,style,link").forEach((t) => t.remove());
+
   article.innerHTML = "";
-  article.classList.remove("whitespace-pre-wrap");
+  article.classList.remove("text-only");
   article.append(tpl.content.cloneNode(true));
 }
 
@@ -130,7 +131,7 @@ function fixLinks(article) {
     const href = c.getAttribute("href").replace("../", "");
 
     if (!href.startsWith("/article/")) {
-      c.href = "/article/" + href.replace('/', '');
+      c.href = "/article/" + href.replace("/", "");
     }
   });
 }
@@ -162,7 +163,7 @@ function linkHeadingsToArticles(article) {
 
     const link = document.createElement("a");
     link.href = getArticleUrl(text);
-      link.innerText = text;
+    link.innerText = text;
     link.title = "Read more about " + text;
     heading.innerHTML = "";
     heading.append(link);

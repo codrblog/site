@@ -130,6 +130,10 @@ header h1 {
   padding: var(--gap-6);
 }
 
+.text-only {
+  white-space: pre-wrap;
+}
+
 .article table {
   font-size: 0.75rem;
   line-height: 1.5;
