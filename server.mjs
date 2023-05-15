@@ -54,7 +54,7 @@ async function serve(req, res) {
   if (req.url === "/@index") {
     const lines = readIndex().sort();
     const spacer = /_/g;
-    const content = '<h1>Index</h1><nav><ul>' +
+    const content = '<!-- html ready --><h1>Index</h1><nav><ul>' +
       lines.filter(Boolean).map(line => `<li><a href="${line}">${line.replace(spacer, ' ').replace("/article/", "")}</a></li>`)
       .join('') + '</ul></nav>';
 
