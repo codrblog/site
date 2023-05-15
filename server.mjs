@@ -19,14 +19,14 @@ const model = String(process.env.API_MODEL);
 const apiKey = String(process.env.API_KEY);
 const useCache = !Boolean(process.env.NO_CACHE);
 const useStream = Boolean(process.env.API_STREAM);
-const contentMarker = '<!--%content%-->';
+const contentMarker = "<!--%content%-->";
 const indexParts = readFileSync("./index.html", "utf8").split(contentMarker);
 const promptText = readFileSync("./prompt.txt", "utf8");
 const assets = readdirSync(join(CWD, "assets"));
 
 function log(...args) {
   const time = `[${new Date().toISOString().slice(0, 19)}] `;
-  if (typeof args[0] === 'string') {
+  if (typeof args[0] === "string") {
     return console.log(time + args[0], ...args.slice(1));
   }
 
@@ -41,24 +41,33 @@ async function serve(req, res) {
   }
 
   if (assets.includes(req.url.slice(1))) {
-    res.setHeader('cache-control', 'max-age=604800');
+    res.setHeader("cache-control", "max-age=604800");
     createReadStream(join(CWD, "assets", req.url.slice(1))).pipe(res);
     return;
   }
 
-  if (req.url === "/" || !req.url.replace('/article/', '')) {
-    res.end(indexParts.join(''));
+  if (req.url === "/" || !req.url.replace("/article/", "")) {
+    renderRandomArticle(res);
     return;
   }
 
   if (req.url === "/@index") {
     const lines = readIndex().sort();
     const spacer = /_/g;
-    const content = '<!-- html ready --><h1>Index</h1><nav><ul>' +
-      lines.filter(Boolean).map(line => `<li><a href="${line}">${line.replace(spacer, ' ').replace("/article/", "")}</a></li>`)
-      .join('') + '</ul></nav>';
+    const content =
+      "<!-- html ready --><h1>Index</h1><nav><ul>" +
+      lines
+        .filter(Boolean)
+        .map(
+          (line) =>
+            `<li><a href="${line}">${line
+              .replace(spacer, " ")
+              .replace("/article/", "")}</a></li>`
+        )
+        .join("") +
+      "</ul></nav>";
 
-    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.writeHead(200, { "Content-Type": "text/html" });
     res.write(indexParts[0]);
     res.write(content);
     res.write(indexParts[1]);
@@ -80,8 +89,8 @@ async function serve(req, res) {
       req.writeHead(400);
     }
 
-    if (String(suggestion).trim().toLowerCase() === 'delete it') {
-      log('delete %s', suggestionPath);
+    if (String(suggestion).trim().toLowerCase() === "delete it") {
+      log("delete %s", suggestionPath);
       removeFromCache(suggestionPath);
       res.writeHead(204);
       res.end();
@@ -126,9 +135,9 @@ async function streamContent(res, urlPath) {
     return;
   }
 
-  const stream = createCompletionWithCache(urlPath, '');
-  stream.on('data', (next) => res.write(next));
-  stream.on('end', () => res.end(indexParts[1]));
+  const stream = createCompletionWithCache(urlPath, "");
+  stream.on("data", (next) => res.write(next));
+  stream.on("end", () => res.end(indexParts[1]));
 }
 
 function createCompletionWithCache(urlPath, suggestion) {
@@ -139,8 +148,8 @@ function createCompletionWithCache(urlPath, suggestion) {
     const fileHandle = createWriteStream(filePath);
     fileHandle.write(`<!-- ${urlPath} -->\n\n`);
 
-    stream.on('data', (next) => fileHandle.write(next));
-    stream.on('end', () => {
+    stream.on("data", (next) => fileHandle.write(next));
+    stream.on("end", () => {
       fileHandle.end();
       renderAndUpdateCache(urlPath);
     });
@@ -154,15 +163,15 @@ async function renderAndUpdateCache(urlPath) {
     method: "POST",
   });
 
-  remote.on('response', (s) => {
+  remote.on("response", (s) => {
     if (s.statusCode !== 200) {
       return;
     }
 
     const chunks = [];
-    s.on('data', data => chunks.push(data));
-    s.on('end', () => {
-      const html = Buffer.concat(chunks).toString('utf8');
+    s.on("data", (data) => chunks.push(data));
+    s.on("end", () => {
+      const html = Buffer.concat(chunks).toString("utf8");
       writeFileSync(getCachePath(urlPath), htmlMarker + html);
     });
   });
@@ -173,10 +182,12 @@ async function renderAndUpdateCache(urlPath) {
 }
 
 function createCompletionRequest(urlPath, suggestion) {
-  const prompt = promptText.replace(
-    "{urlPath}",
-    urlPath.replace("/article/", "")
-  ) + (suggestion ? "Consider this suggestion for an improved content: " + suggestion.slice(0, 255) : '');
+  const prompt =
+    promptText.replace("{urlPath}", urlPath.replace("/article/", "")) +
+    (suggestion
+      ? "Consider this suggestion for an improved content: " +
+        suggestion.slice(0, 255)
+      : "");
 
   const body = {
     model,
@@ -184,57 +195,63 @@ function createCompletionRequest(urlPath, suggestion) {
     messages: [{ role: "user", content: prompt }],
   };
 
-  const stream = request('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
+  const stream = request("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
     headers: {
-      'content-type': 'application/json',
-      'authorization': `Bearer ${apiKey}`,
-    }
+      "content-type": "application/json",
+      authorization: `Bearer ${apiKey}`,
+    },
   });
 
   const output = new EventEmitter();
-  stream.on('response', (r) => {
+  stream.on("response", (r) => {
     const chunks = [];
 
-    r.on('data', (event) => {
+    r.on("data", (event) => {
       if (useStream) {
-        event.toString('utf8').split('\n\n').map(line => {
-          const next = line.trim().replace('data: ', '').trim();
+        event
+          .toString("utf8")
+          .split("\n\n")
+          .map((line) => {
+            const next = line.trim().replace("data: ", "").trim();
 
-          if (!next || next === '[DONE]') {
-            return;
-          }
+            if (!next || next === "[DONE]") {
+              return;
+            }
 
-          const token = JSON.parse(next).choices[0].delta.content;
-          if (token) {
-            output.emit('data', token);
-          }
-        });
+            const token = JSON.parse(next).choices[0].delta.content;
+            if (token) {
+              output.emit("data", token);
+            }
+          });
         return;
       }
 
       chunks.push(event);
     });
 
-    r.on('end', () => {
+    r.on("end", () => {
       if (useStream) {
-        output.emit('end');
+        output.emit("end");
         return;
       }
 
-      const json = JSON.parse(Buffer.concat(chunks).toString('utf-8'));
-      log('completion', json);
+      const json = JSON.parse(Buffer.concat(chunks).toString("utf-8"));
+      log("completion", json);
 
       if (json?.choices) {
-        output.emit('data', String(json.choices.map((c) => c.message.content).join("")));
+        output.emit(
+          "data",
+          String(json.choices.map((c) => c.message.content).join(""))
+        );
       }
 
-      output.emit('end');
+      output.emit("end");
     });
   });
 
   const payload = JSON.stringify(body, null, 2);
-  log('payload: %s', payload);
+  log("payload: %s", payload);
   stream.end(payload);
 
   return output;
@@ -258,12 +275,21 @@ function removeFromCache(url) {
   }
 }
 
-const htmlMarker = '<!-- html ready -->';
+const htmlMarker = "<!-- html ready -->";
 
 async function readFromCache(url) {
   const filePath = getCachePath(url);
   const content = readFileSync(filePath, "utf8");
-  return content.replace(/^<\!-- .+? -->/, '');
+  return content.replace(/^<\!-- .+? -->/, "");
+}
+
+function renderRandomArticle(res) {
+  const cacheFiles = readdirSync(join(CWD, "cache"));
+  const filePath = join(CWD, "cache", cacheFiles[cacheFiles.length - 1]);
+  const content = readFileSync(filePath, "utf8").replace(/^<\!-- .+? -->/, "");
+
+  res.writeHead(200, { "content-type": "text/html" });
+  res.end(indexParts.join(content));
 }
 
 function readIndex() {
