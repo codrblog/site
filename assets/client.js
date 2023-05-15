@@ -20,9 +20,9 @@ function onLoad() {
 
   const isHomePage = location.pathname === "/";
 
+  renderArticle();
   if (!isHomePage) {
     showSuggestionsForm();
-    renderArticle();
   }
 }
 
