@@ -1,7 +1,9 @@
 :root {
   --primary: #333;
   --gray-500: rgba(107, 114, 128, 1);
+  --gray-400: rgba(156, 163, 175, 1);
   --gray-100: rgba(243, 244, 246, 1);
+  --gap-1: 0.25rem;
   --gap-2: 0.5rem;
   --gap-4: 1rem;
   --gap-6: 1.5rem;
@@ -52,14 +54,31 @@ header h1 {
 .border-primary { border-color: var(--primary); }
 
 .bg-gray-100 { background-color: var(--gray-100); }
+.border-gray-400 { border-color: var(--gray-400); }
 
 .hidden { display: none; }
 .block { display: block; }
 .flex { display: flex; }
+
 .flex-wrap { flex-wrap: wrap; }
 .items-center { align-items: center; }
 
-.rounded-lg { border-radius: 0.5rem; }
+.rounded { border-radius: var(--gap-1); }
+.rounded-lg { border-radius: var(--gap-2); }
+
+.input {
+  width: 100%;
+  padding: var(--gap-2);
+  border: 1px solid var(--gray-400);
+  border-radius: var(--gap-1);
+}
+
+.footer-nav {
+  display: block;
+  color: var(--gray-400);
+  text-align: center;
+  padding: var(--gap-6);
+}
 
 .article table {
   font-size: 0.75rem;

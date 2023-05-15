@@ -285,10 +285,11 @@ async function readFromCache(url) {
 
 function renderRandomArticle(res) {
   const cacheFiles = readdirSync(join(CWD, "cache"));
-  const filePath = join(CWD, "cache", cacheFiles[cacheFiles.length - 1]);
+  const index = (Math.random * 99999) % cacheFiles.length;
+  const filePath = join(CWD, "cache", cacheFiles[index]);
   const content = readFileSync(filePath, "utf8").replace(/^<\!-- .+? -->/, "");
 
-  res.writeHead(200, { "content-type": "text/html" });
+  res.writeHead(200, { "Content-Type": "text/html" });
   res.end(indexParts.join(content));
 }
 

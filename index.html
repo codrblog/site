@@ -35,21 +35,17 @@
           <label for="suggestion" class="block mb-2">
             Suggest an improvement for this article:
           </label>
-          <textarea
-            id="suggestion"
-            rows="2"
-            class="w-full p-2 border border-gray-300 rounded"
-          ></textarea>
+          <textarea id="suggestion" rows="2" class="input"></textarea>
           <div class="text-right">
             <button type="submit">OK</button>
           </div>
         </form>
-        <nav class="text-gray-400 block text-center py-6">
+        <nav class="footer-nav">
           <a href="/@index">Index</a>
         </nav>
       </footer>
     </main>
-    <form class="bg-gray-100 flex items-center p-6" id="search">
+    <form class="bg-primary flex items-center p-6" id="search">
       <input
         class="block px-6 w-full h-16 font-semibold text-xl rounded-lg focus:outline-none"
         type="text"
@@ -61,17 +57,20 @@
   </body>
   <!-- Google tag (gtag.js) -->
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z81X7EMR9K"></script>
+  <script
+    async
+    src="https://www.googletagmanager.com/gtag/js?id=G-Z81X7EMR9K"
+  ></script>
 
-<script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
 
-  window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
 
-  function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
 
-  gtag('js', new Date());
-
-  gtag('config', 'G-Z81X7EMR9K');
-
-</script>
+    gtag("config", "G-Z81X7EMR9K");
+  </script>
 </html>
