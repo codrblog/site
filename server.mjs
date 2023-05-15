@@ -58,7 +58,11 @@ async function serve(req, res) {
       lines.filter(Boolean).map(line => `<li><a href="${line}">${line.replace(spacer, ' ').replace("/article/", "")}</a></li>`)
       .join('') + '</ul></nav>';
 
-    res.end(content);
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.write(indexParts[0]);
+    res.write(content);
+    res.write(indexParts[1]);
+    res.end();
     return;
   }
 
