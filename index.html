@@ -31,14 +31,15 @@
         </div>
       </article>
       <footer class="w-article mx-auto">
-        <form id="suggestion" class="hidden">
-          <label for="suggestion" class="block mb-2"
-            >Suggest an improvement for this article:</label
-          >
-          <input
+        <form id="suggestion-form" class="hidden">
+          <label for="suggestion" class="block mb-2">
+            Suggest an improvement for this article:
+          </label>
+          <textarea
+            id="suggestion"
+            rows="2"
             class="w-full p-2 border border-gray-300 rounded"
-            maxlength="255"
-          />
+          ></textarea>
           <button type="submit" class="sr-only">OK</button>
         </form>
         <nav class="text-gray-400 block text-center py-6">

@@ -11,18 +11,6 @@ function getArticleUrl(text) {
   );
 }
 
-function onAddSuggestion(event) {
-  event.preventDefault();
-  const form = document.querySelector("#suggestion form");
-  const suggestion = form.querySelector("input").value;
-
-  form.innerHTML = "Thank you!";
-  fetch("/@suggestion" + location.pathname, {
-    method: "POST",
-    body: suggestion,
-  });
-}
-
 function onLoad() {
   document
     .querySelectorAll("#search")
@@ -67,14 +55,25 @@ function updatePrimaryColor() {
 }
 
 function showSuggestionsForm() {
-  const suggestions = document.querySelector("#suggestion");
+  const form = document.querySelector("#suggestion-form");
 
-  if (!suggestions) {
+  if (!form) {
     return;
   }
 
-  suggestions.classList.remove("hidden");
-  suggestions.addEventListener("submit", onAddSuggestion);
+  function onAddSuggestion(event) {
+    event.preventDefault();
+    const suggestion = form.querySelector("textarea")?.value;
+
+    form.innerHTML = "Thank you!";
+    fetch("/@suggestion" + location.pathname, {
+      method: "POST",
+      body: suggestion,
+    });
+  }
+
+  form.classList.remove("hidden");
+  form.addEventListener("submit", onAddSuggestion);
 }
 
 async function renderArticle() {

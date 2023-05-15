@@ -23,7 +23,6 @@ header h1 {
   color: white;
 }
 
-
 .p-2 { padding: var(--gap-2); }
 .p-4 { padding: var(--gap-4); }
 .p-6 { padding: var(--gap-6); }
@@ -126,6 +125,10 @@ header h1 {
 
 .article li {
   margin-bottom: 0.6rem;
+}
+
+.article li p {
+  display: inline;
 }
 
 .article li:last-child {
