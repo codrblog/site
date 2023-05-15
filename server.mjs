@@ -285,7 +285,7 @@ async function readFromCache(url) {
 
 function renderRandomArticle(res) {
   const cacheFiles = readdirSync(join(CWD, "cache"));
-  const index = (Math.random * 99999) % cacheFiles.length;
+  const index = Math.floor(Math.random() * cacheFiles.length) % cacheFiles.length;
   const filePath = join(CWD, "cache", cacheFiles[index]);
   const content = readFileSync(filePath, "utf8").replace(/^<\!-- .+? -->/, "");
 
