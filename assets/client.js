@@ -134,6 +134,11 @@ function fixLinks(article) {
       c.href = "/article/" + href.replace("/", "");
     }
   });
+
+  [...article.querySelectorAll("a")].forEach(a => {
+    const href = c.getAttribute("href");
+    a.title = 'Open ' + href;
+  });
 }
 
 function wrapTables(article) {
