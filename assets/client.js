@@ -87,7 +87,7 @@ async function renderArticle() {
   const response = await fetch("https://markdown.jsfn.run?html=1", {
     method: "POST",
     mode: "cors",
-    body: content,
+    body: content.trim(),
   });
 
   if (!response.ok) {
@@ -130,7 +130,7 @@ function fixLinks(article) {
     const href = c.getAttribute("href").replace("../", "");
 
     if (!href.startsWith("/article/")) {
-      c.href = "/article/" + href;
+      c.href = "/article/" + href.replace('/', '');
     }
   });
 }
@@ -162,7 +162,7 @@ function linkHeadingsToArticles(article) {
 
     const link = document.createElement("a");
     link.href = getArticleUrl(text);
-    link.innerText = text;
+      link.innerText = text;
     link.title = "Read more about " + text;
     heading.innerHTML = "";
     heading.append(link);

@@ -46,8 +46,10 @@ footer {
   margin: 0 auto;
 }
 
-input {
-  color: #333
+input,
+textarea {
+  color: #333;
+  border: 1px solid var(--gray-400);
 }
 
 a {
@@ -60,6 +62,7 @@ header h1 {
   line-height: 2rem;
   font-weight: bold;
   color: white;
+  margin: 0;
 }
 
 .button {
@@ -67,6 +70,7 @@ header h1 {
   border-radius: var(--gap-1);
   color: white;
   background-color: var(--primary);
+  border: 0;
 }
 
 .text-right {
@@ -107,10 +111,9 @@ header h1 {
   outline: none
 }
 
-.suggestions input {
+.suggestions textarea {
   width: 100%;
   padding: var(--gap-2);
-  border: 1px solid var(--gray-400);
   border-radius: var(--gap-1);
 }
 
