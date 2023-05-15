@@ -15,29 +15,22 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
   </head>
 
-  <body class="flex flex-col h-screen">
-    <main class="flex-grow overflow-y-scroll relative">
-      <header class="bg-primary px-8 py-2 sticky top-0">
+  <body>
+    <main>
+      <header>
         <h1>
           <a href="/">CODR - The infinite blog</a>
         </h1>
       </header>
-      <article class="p-8">
-        <div
-          id="content"
-          class="article w-article mx-auto w-full whitespace-pre-wrap"
-        >
-          <!--%content%-->
-        </div>
-      </article>
-      <footer class="w-article mx-auto">
-        <form id="suggestion-form" class="hidden">
-          <label for="suggestion" class="block mb-2">
+      <article id="content"><!--%content%--></article>
+      <footer>
+        <form id="suggestion-form" class="suggestions hidden">
+          <label for="suggestion">
             Suggest an improvement for this article:
           </label>
-          <textarea id="suggestion" rows="2" class="input"></textarea>
+          <textarea id="suggestion" rows="2"></textarea>
           <div class="text-right">
-            <button type="submit">OK</button>
+            <button type="submit" class="button">OK</button>
           </div>
         </form>
         <nav class="footer-nav">
@@ -45,18 +38,15 @@
         </nav>
       </footer>
     </main>
-    <form class="bg-primary flex items-center p-6" id="search">
+    <form class="search" id="search">
       <input
-        class="block px-6 w-full h-16 font-semibold text-xl rounded-lg focus:outline-none"
         type="text"
         placeholder="Ask me anything 😀"
         aria-label="Ask me anything"
       />
-      <button class="sr-only">Search</button>
+      <button type="submit" class="sr-only">Search</button>
     </form>
   </body>
-  <!-- Google tag (gtag.js) -->
-
   <script
     async
     src="https://www.googletagmanager.com/gtag/js?id=G-Z81X7EMR9K"
@@ -70,7 +60,6 @@
     }
 
     gtag("js", new Date());
-
     gtag("config", "G-Z81X7EMR9K");
   </script>
 </html>
