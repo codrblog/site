@@ -4,6 +4,7 @@ import { request } from "https";
 import { join } from "path";
 import { createHash } from "crypto";
 import { spawnSync } from "child_process";
+import mime from 'mime';
 import {
   readFileSync,
   writeFileSync,
@@ -41,8 +42,7 @@ async function serve(req, res) {
   }
 
   if (assets.includes(req.url.slice(1))) {
-    res.setHeader("cache-control", "max-age=604800");
-    createReadStream(join(CWD, "assets", req.url.slice(1))).pipe(res);
+    readAsset(res, req.url.slice(1));
     return;
   }
 
@@ -115,6 +115,11 @@ async function serve(req, res) {
   streamContent(res, urlPath);
 }
 
+function readAsset(res, path) {
+  res.setHeader("cache-control", "max-age=604800");
+  res.setHeader("content-type", mime.getType(path));
+  createReadStream(join(CWD, "assets", path)).pipe(res);
+}
 async function readBody(request) {
   return new Promise((resolve) => {
     const chunks = [];

@@ -3,10 +3,13 @@
   "version": "0.0.0",
   "main": "./server.mjs",
   "scripts": {
-    "ci": "echo true"
+    "ci": "npm i"
   },
   "private": true,
   "license": "MIT",
+  "dependencies": {
+    "mime": "^2.5.0"
+  },
   "devDependencies": {
     "@types/node": "^20.1.0"
   }
