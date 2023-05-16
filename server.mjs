@@ -177,7 +177,7 @@ async function renderAndUpdateCache(urlPath) {
     s.on("data", (data) => chunks.push(data));
     s.on("end", () => {
       const html = Buffer.concat(chunks).toString("utf8");
-      writeFileSync(getCachePath(urlPath), htmlMarker + html);
+      writeFileSync(getCachePath(urlPath), html + htmlMarker);
     });
   });
 
@@ -292,10 +292,13 @@ function renderRandomArticle(res) {
   const cacheFiles = readdirSync(join(CWD, "cache"));
   const index = Math.floor(Math.random() * cacheFiles.length) % cacheFiles.length;
   const filePath = join(CWD, "cache", cacheFiles[index]);
-  const content = readFileSync(filePath, "utf8").replace(/^<\!-- .+? -->/, "");
+  const content = readFileSync(filePath, "utf8");
+  const html = content.replace(htmlMarker, '').replace(/^<\!-- .+? -->/, "");
+  const href = parseArticleLinkComment(content);
+  const footerLink = `<a href="${href}">${href}</a>`
 
   res.writeHead(200, { "Content-Type": "text/html" });
-  res.end(indexParts.join(content));
+  res.end(indexParts.join(html + footerLink));
 }
 
 function readIndex() {
@@ -310,9 +313,13 @@ function readIndex() {
   const lines = headers
     .split("\n")
     .filter((s) => Boolean(s.trim()) && s.startsWith("<!--"))
-    .map((s) => s.replace("<!--", "").replace("-->", "").trim().slice(0, 255));
+    .map(parseArticleLinkComment);
 
   return lines;
+}
+
+function parseArticleLinkComment(text) {
+  return text.replace("<!--", "").replace("-->", "").trim().slice(0, 255);
 }
 
 function sha256(value) {
