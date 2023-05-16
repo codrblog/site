@@ -136,7 +136,8 @@ function fixLinks(article) {
   });
 
   [...article.querySelectorAll("a")].forEach(a => {
-    const href = c.getAttribute("href");
+    const href = a.getAttribute("href");
+
     a.title = 'Open ' + href;
   });
 }
