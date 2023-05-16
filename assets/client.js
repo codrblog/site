@@ -122,7 +122,7 @@ function updatePageTitle(article) {
 
 function fixCodeBlocks(article) {
   [...article.querySelectorAll("code")].forEach((c) => {
-    c.innerText = c.innerText.trim();
+    c.innerHTML = c.innerHTML.trim().replace(/&amp;/g, "&");
   });
 }
 
@@ -135,10 +135,10 @@ function fixLinks(article) {
     }
   });
 
-  [...article.querySelectorAll("a")].forEach(a => {
+  [...article.querySelectorAll("a")].forEach((a) => {
     const href = a.getAttribute("href");
 
-    a.title = 'Open ' + href;
+    a.title = "Open " + href;
   });
 }
 
