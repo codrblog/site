@@ -181,7 +181,7 @@ async function renderAndUpdateCache(urlPath) {
     });
   });
 
-  const cacheContent = readFromCache(urlPath);
+  const cacheContent = await readFromCache(urlPath);
   remote.write(cacheContent);
   remote.end();
 }
