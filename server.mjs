@@ -295,7 +295,7 @@ function renderRandomArticle(res) {
   const content = readFileSync(filePath, "utf8");
   const html = content.replace(htmlMarker, '').replace(/^<\!-- .+? -->/, "");
   const href = parseArticleLinkComment(content);
-  const footerLink = `<a href="${href}">${href}</a>`
+  const footerLink = `\n\nLink: <a href="${href}">${href}</a>`
 
   res.writeHead(200, { "Content-Type": "text/html" });
   res.end(indexParts.join(html + footerLink));
