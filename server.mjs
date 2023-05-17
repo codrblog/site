@@ -319,7 +319,10 @@ function readIndex() {
 }
 
 function parseArticleLinkComment(text) {
-  return text.replace("<!--", "").replace("-->", "").trim().slice(0, 255);
+  const start = text.indexOf('<!--');
+  const end = text.indexOf('-->');
+
+  return text.slice(start + 4, end - 3).trim();
 }
 
 function sha256(value) {
