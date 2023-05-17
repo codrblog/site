@@ -322,7 +322,7 @@ function parseArticleLinkComment(text) {
   const start = text.indexOf('<!--');
   const end = text.indexOf('-->');
 
-  return text.slice(start + 4, end - 3).trim();
+  return text.slice(start + 4, end).trim();
 }
 
 function sha256(value) {
