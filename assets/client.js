@@ -79,10 +79,19 @@ function showSuggestionsForm() {
 
 async function renderArticle() {
   const article = document.querySelector("#content");
+
+  await updateArticleContent(article);
+  updatePageTitle(article);
+  fixCodeBlocks(article);
+  fixLinks(article);
+  linkHeadingsToArticles(article);
+}
+
+async function updateArticleContent(article) {
   const content = article.innerHTML;
-  article.classList.remove("text-only");
 
   if (content.includes("<!-- html ready -->")) {
+    article.classList.remove("text-only");
     return;
   }
 
@@ -97,17 +106,8 @@ async function renderArticle() {
   }
 
   const html = await response.text();
-
-  updateArticleContent(article, html);
-  updatePageTitle(article);
-  fixCodeBlocks(article);
-  fixLinks(article);
-  linkHeadingsToArticles(article);
-}
-
-function updateArticleContent(article, content) {
   const tpl = document.createElement("template");
-  tpl.innerHTML = content;
+  tpl.innerHTML = html;
   tpl.content.querySelectorAll("script,style,link").forEach((t) => t.remove());
 
   article.innerHTML = "";
