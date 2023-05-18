@@ -42,6 +42,10 @@ footer {
   padding: var(--gap-8);
 }
 
+article {
+  padding-top: 0;
+}
+
 input,
 textarea {
   color: #333;
