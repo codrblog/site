@@ -25,10 +25,9 @@ const prefix = process.env.PROMPT_PREFIX || "";
 const contentMarker = "<!--%content%-->";
 const indexParts = readFileSync("./index.html", "utf8").split(contentMarker);
 const promptText = `
-Create an article, using only markdown format, that matches the following URL path: "${prefix}{urlPath}".
-Provide the sources from where the article was created and be as truthful as possible.
-Also try to create as much content as possible.
-At the end of the article, generate at least 3 relative links with content related to the current page.
+Write an article, that matches the following URL path: "${prefix}{urlPath}".
+Use markdown format and provide valid sources from where the article was created.
+Be as truthful as possible and at the end of the article generate at least 3 relative links with more content that could be related to the current page.
 `;
 const assets = readdirSync(join(CWD, "assets"));
 
