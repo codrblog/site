@@ -356,7 +356,7 @@ const htmlMarker = "<!-- html ready -->";
 async function readFromCache(url) {
   const filePath = getCachePath(url);
   const content = readFileSync(filePath, "utf8");
-  return content.replace(/^<\!-- .+? -->/, "");
+  return content.replace(/^<\!--.+?-->/, "");
 }
 
 function renderRandomArticle(res) {
@@ -365,12 +365,12 @@ function renderRandomArticle(res) {
     Math.floor(Math.random() * cacheFiles.length) % cacheFiles.length;
   const filePath = join(CWD, "cache", cacheFiles[index]);
   const content = readFileSync(filePath, "utf8");
-  const html = content.replace(htmlMarker, "").replace(/^<\!-- .+? -->/, "");
+  const html = content.replace(htmlMarker, "");
   const href = parseArticleLinkComment(content);
   const footerLink = `\n\nLink: <a href="${href}">${href}</a>`;
 
   res.writeHead(200, { "Content-Type": "text/html" });
-  res.end(indexParts.join(html + footerLink));
+  res.end(indexParts.join(html.replace(/^<\!--.+?-->/g, "") + footerLink));
 }
 
 function readIndex() {
