@@ -16,8 +16,9 @@ import {
 } from "fs";
 
 const CWD = process.cwd();
-const model = String(process.env.API_MODEL);
 const apiKey = String(process.env.API_KEY);
+const bufferMaxLength = Number(process.env.BUFFER_MAX_LENGTH);
+const model = String(process.env.API_MODEL);
 const useCache = !Boolean(process.env.NO_CACHE);
 const useStream = Boolean(process.env.API_STREAM);
 const prefix = process.env.PROMPT_PREFIX || "";
@@ -151,7 +152,7 @@ async function streamContent(res, urlPath) {
   stream.on("data", (next) => {
     buffer.push(next);
 
-    if (next.includes("\n")) {
+    if (next.includes("\n") || buffer.length > bufferMaxLength) {
       res.write(buffer.join(""));
       buffer.length = 0;
     }
