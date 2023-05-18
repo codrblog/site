@@ -151,15 +151,13 @@ async function streamContent(res, urlPath) {
   stream.on("data", (next) => {
     buffer.push(next);
 
-    if (next.toString("utf8").includes("\n")) {
-      res.write(Buffer.concat(buffer).toString("utf8"));
+    if (next.includes("\n")) {
+      res.write(buffer.join(""));
       buffer.length = 0;
     }
   });
   stream.on("end", () => {
-    if (buffer.length) {
-      res.write(Buffer.concat(buffer).toString("utf8"));
-    }
+    res.write(buffer.join(""));
     res.end(indexParts[1]);
   });
 }
