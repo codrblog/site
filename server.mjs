@@ -22,13 +22,19 @@ const model = String(process.env.API_MODEL);
 const useCache = !Boolean(process.env.NO_CACHE);
 const useStream = Boolean(process.env.API_STREAM);
 const prefix = process.env.PROMPT_PREFIX || "";
+const appName = String(process.env.APP_NAME);
 const contentMarker = "<!--%content%-->";
-const indexParts = readFileSync("./index.html", "utf8").split(contentMarker);
-const promptText = `
-Write an article, that matches the following URL path: "${prefix}{urlPath}".
-Use markdown format and provide valid sources from where the article was created.
-Be as truthful as possible and at the end of the article generate at least 3 relative links with more content that could be related to the current page.
-`;
+const manifest = readFileSync("./assets/manifest.json", "utf-8").replace(
+  "{name}",
+  appName
+);
+const indexParts = readFileSync("./index.html", "utf8")
+  .replace("{name}", appName)
+  .split(contentMarker);
+
+const promptText = `Write an article, in markdown text, that matches the following URL path: "${prefix}{urlPath}".
+Provide valid sources from where the article was created and be as truthful as possible.
+At the end of the article generate at least 3 relative links with further readings relative to the current page`;
 const assets = readdirSync(join(CWD, "assets"));
 
 function log(...args) {
@@ -41,23 +47,32 @@ function log(...args) {
 }
 
 async function serve(req, res) {
-  if (req.url === "/favicon.ico") {
+  const parsedUrl = new URL(req.url, "http://localhost/");
+  const pathName = parsedUrl.pathname;
+
+  if (pathName === "/favicon.ico") {
     res.writeHead(404);
     res.end();
     return;
   }
 
-  if (assets.includes(req.url.slice(1))) {
+  if (pathName === "/manifest.json") {
+    res.writeHead(200);
+    res.end(manifest);
+    return;
+  }
+
+  if (assets.includes(pathName.slice(1))) {
     readAsset(res, req.url.slice(1));
     return;
   }
 
-  if (req.url === "/" || !req.url.replace("/article/", "")) {
+  if (pathName === "/" || !pathName.replace("/article/", "")) {
     renderRandomArticle(res);
     return;
   }
 
-  if (req.url === "/@index") {
+  if (pathName === "/@index") {
     const lines = readIndex().sort();
     const spacer = /_/g;
     const content =
@@ -81,7 +96,7 @@ async function serve(req, res) {
     return;
   }
 
-  if (req.url.startsWith("/@suggestion/")) {
+  if (pathName.startsWith("/@suggestion/")) {
     if (!useCache) {
       res.writeHead(201);
       res.end();
@@ -89,10 +104,12 @@ async function serve(req, res) {
     }
 
     const suggestion = await readBody(req);
-    const suggestionPath = req.url.replace("/@suggestion", "");
+    const suggestionPath = pathName.replace("/@suggestion", "");
 
-    if (!suggestionPath) {
-      req.writeHead(400);
+    if (!suggestionPath || !isCached(suggestionPath)) {
+      res.writeHead(400);
+      res.end();
+      return;
     }
 
     if (String(suggestion).trim().toLowerCase() === "delete it") {
@@ -107,18 +124,17 @@ async function serve(req, res) {
     log("update %s", suggestionPath);
     log("suggestion: ", suggestion);
 
-    createCompletionWithCache(suggestionPath, suggestion);
+    editArticle(suggestionPath, suggestion);
     return;
   }
 
-  const urlPath = req.url;
-  if (!urlPath.startsWith("/article/")) {
+  if (!pathName.startsWith("/article/")) {
     res.writeHead(404);
     res.end();
     return;
   }
 
-  streamContent(res, urlPath);
+  streamContent(res, pathName);
 }
 
 function readAsset(res, path) {
@@ -126,11 +142,12 @@ function readAsset(res, path) {
   res.setHeader("content-type", mime.getType(path));
   createReadStream(join(CWD, "assets", path)).pipe(res);
 }
-async function readBody(request) {
+
+async function readBody(stream) {
   return new Promise((resolve) => {
     const chunks = [];
-    request.on("data", (c) => chunks.push(c));
-    request.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+    stream.on("data", (c) => chunks.push(c));
+    stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
   });
 }
 
@@ -162,9 +179,42 @@ async function streamContent(res, urlPath) {
   });
 }
 
-function createCompletionWithCache(urlPath, suggestion) {
+async function editArticle(urlPath, suggestion) {
+  const cachedText = await readFromCache(urlPath);
+  const remote = request("https://api.openai.com/v1/edits", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+  });
+
+  remote.on("response", (r) => {
+    const chunks = [];
+    r.on("data", (c) => chunks.push(c));
+    r.on("end", () => {
+      const text = Buffer.concat(chunks).toString("utf8");
+      const filePath = getCachePath(urlPath);
+      const stream = createWriteStream(filePath, "utf8");
+      stream.write(text);
+      stream.end();
+    });
+  });
+
+  remote.write(
+    JSON.stringify({
+      model: "text-davinci-edit-001",
+      input: cachedText,
+      instruction: suggestion,
+    })
+  );
+
+  remote.end();
+}
+
+function createCompletionWithCache(urlPath) {
   const filePath = getCachePath(urlPath);
-  const stream = createCompletionRequest(urlPath, suggestion);
+  const stream = createCompletionRequest(urlPath);
 
   if (useCache) {
     const fileHandle = createWriteStream(filePath);

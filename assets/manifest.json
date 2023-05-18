@@ -1,6 +1,5 @@
 {
-  "name": "CODR",
-  "short_name": "CODR",
+  "name": "{name}",
   "icons": [
     {
       "src": "/codr.png",
