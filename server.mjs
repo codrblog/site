@@ -195,10 +195,13 @@ async function editArticle(urlPath, suggestion) {
     r.on("end", () => {
       const text = Buffer.concat(chunks).toString("utf8");
       const filePath = getCachePath(urlPath);
-      log("Update article %s", urlPath);
-      log(text);
+      const body = JSON.parse(text);
+      const newArticle = body.choices[0].text;
 
-      writeFileSync(filePath, text);
+      log("Update article %s", urlPath);
+      log(newArticle);
+
+      writeFileSync(filePath, newArticle);
     });
   });
 
