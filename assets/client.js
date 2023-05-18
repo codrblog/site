@@ -28,31 +28,17 @@ function onLoad() {
 }
 
 function updatePrimaryColor() {
-  const colors = [
-    "#F44336",
-    "#E91E63",
-    "#9C27B0",
-    "#673AB7",
-    "#3F51B5",
-    "#2196F3",
-    "#03A9F4",
-    "#00BCD4",
-    "#009688",
-    "#4CAF50",
-    "#8BC34A",
-    "#CDDC39",
-    "#FFC107",
-    "#FF9800",
-    "#FF5722",
-    "#795548",
-    "#607D8B",
-  ];
+  let colors =
+    "F44336|E91E63|9C27B0|673AB7|3F51B5|2196F3|03A9F4|00BCD4|009688|4CAF50|8BC34A|CDDC39|FFC107|FF9800|FF5722|795548|607D8B";
 
+  colors = colors.split("|");
   const index = 1 + (Math.floor(Math.random() * 1000) % colors.length) - 1;
   const color = colors[index];
   const style = document.createElement("style");
+  const theme = document.head.querySelector('meta[name="theme-color"]');
   style.textContent = ":root { --primary: " + color + "; }";
   document.head.appendChild(style);
+  theme.content = color;
 }
 
 function showSuggestionsForm() {
