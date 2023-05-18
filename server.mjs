@@ -151,12 +151,17 @@ async function streamContent(res, urlPath) {
   stream.on("data", (next) => {
     buffer.push(next);
 
-    if (next.includes("\n")) {
+    if (next.toString("utf8").includes("\n")) {
       res.write(Buffer.concat(buffer).toString("utf8"));
       buffer.length = 0;
     }
   });
-  stream.on("end", () => res.end(indexParts[1]));
+  stream.on("end", () => {
+    if (buffer.length) {
+      res.write(Buffer.concat(buffer).toString("utf8"));
+    }
+    res.end(indexParts[1]);
+  });
 }
 
 function createCompletionWithCache(urlPath, suggestion) {
