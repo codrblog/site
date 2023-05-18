@@ -118,7 +118,7 @@ async function updateArticleContent(article) {
 function updatePageTitle(article) {
   const title = article.querySelector("h1");
   if (title) {
-    window.title = title.textContent.trim();
+    document.title = title.textContent.trim();
   }
 }
 
