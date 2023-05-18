@@ -16,14 +16,10 @@ html {
 }
 
 body {
-  font-family: sans-serif;
   word-break: break-word;
   display: flex;
   flex-direction: column;
   height: 100vh;
-}
-
-main {
   overflow-y: scroll;
   position: relative;
 }
@@ -52,14 +48,6 @@ textarea {
 a {
   color: inherit;
   text-decoration: inherit;
-}
-
-header h1 {
-  font-size: 1.5rem;
-  line-height: 2rem;
-  font-weight: bold;
-  color: white;
-  margin: 0;
 }
 
 .button {

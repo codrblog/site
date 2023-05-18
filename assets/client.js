@@ -21,6 +21,7 @@ function onLoad() {
   const isHomePage = location.pathname === "/";
 
   renderArticle();
+
   if (!isHomePage) {
     showSuggestionsForm();
   }
@@ -79,6 +80,7 @@ function showSuggestionsForm() {
 async function renderArticle() {
   const article = document.querySelector("#content");
   const content = article.innerHTML;
+  article.classList.remove("text-only");
 
   if (content.includes("<!-- html ready -->")) {
     return;

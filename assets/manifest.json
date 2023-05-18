@@ -1,7 +1,6 @@
 {
   "name": "CODR",
   "short_name": "CODR",
-  "description": "The infinite coding blog",
   "icons": [
     {
       "src": "/favicon.png",
@@ -16,6 +15,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#60a5fa",
-  "background_color": "#f3f4f6"
+  "theme_color": "#333",
+  "background_color": "#fff"
 }

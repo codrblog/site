@@ -4,7 +4,7 @@ import { request } from "https";
 import { join } from "path";
 import { createHash } from "crypto";
 import { spawnSync } from "child_process";
-import mime from 'mime';
+import mime from "mime";
 import {
   readFileSync,
   writeFileSync,
@@ -141,7 +141,15 @@ async function streamContent(res, urlPath) {
   }
 
   const stream = createCompletionWithCache(urlPath, "");
-  stream.on("data", (next) => res.write(next));
+  const buffer = [];
+  stream.on("data", (next) => {
+    buffer.push(next);
+
+    if (next.includes("\n")) {
+      res.write(Buffer.concat(buffer).toString("utf8"));
+      buffer.length = 0;
+    }
+  });
   stream.on("end", () => res.end(indexParts[1]));
 }
 
@@ -290,12 +298,13 @@ async function readFromCache(url) {
 
 function renderRandomArticle(res) {
   const cacheFiles = readdirSync(join(CWD, "cache"));
-  const index = Math.floor(Math.random() * cacheFiles.length) % cacheFiles.length;
+  const index =
+    Math.floor(Math.random() * cacheFiles.length) % cacheFiles.length;
   const filePath = join(CWD, "cache", cacheFiles[index]);
   const content = readFileSync(filePath, "utf8");
-  const html = content.replace(htmlMarker, '').replace(/^<\!-- .+? -->/, "");
+  const html = content.replace(htmlMarker, "").replace(/^<\!-- .+? -->/, "");
   const href = parseArticleLinkComment(content);
-  const footerLink = `\n\nLink: <a href="${href}">${href}</a>`
+  const footerLink = `\n\nLink: <a href="${href}">${href}</a>`;
 
   res.writeHead(200, { "Content-Type": "text/html" });
   res.end(indexParts.join(html + footerLink));
@@ -319,8 +328,8 @@ function readIndex() {
 }
 
 function parseArticleLinkComment(text) {
-  const start = text.indexOf('<!--');
-  const end = text.indexOf('-->');
+  const start = text.indexOf("<!--");
+  const end = text.indexOf("-->");
 
   return text.slice(start + 4, end).trim();
 }
