@@ -129,18 +129,13 @@ function fixCodeBlocks(article) {
 }
 
 function fixLinks(article) {
-  [...article.querySelectorAll("a:not([href^=http])")].forEach((c) => {
-    const href = c.getAttribute("href").replace("../", "");
+  [...article.querySelectorAll("a")].forEach((c) => {
+    const href = c.getAttribute("href").replace(/\.{1,2}\//g, "");
+    a.title = "Go to " + href;
 
-    if (!href.startsWith("/article/")) {
-      c.href = "/article/" + href.replace("/", "");
-    }
-  });
+    if (href.startsWith("http") || href.startsWith("/article/")) return;
 
-  [...article.querySelectorAll("a")].forEach((a) => {
-    const href = a.getAttribute("href");
-
-    a.title = "Open " + href;
+    c.href = "/article/" + href.replace("/", "");
   });
 }
 
