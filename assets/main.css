@@ -25,10 +25,13 @@ body {
 }
 
 header {
-  padding: var(--gap-2) var(--gap-8);
-  position: sticky;
+  padding: var(--gap-2);
+  position: absolute;
   top: 0;
   background-color: var(--primary);
+  color: white;
+  line-height: 1;
+  border-radius: 50%;
 }
 
 article,
