@@ -33,7 +33,7 @@ function updatePrimaryColor() {
 
   colors = colors.split("|");
   const index = 1 + (Math.floor(Math.random() * 1000) % colors.length) - 1;
-  const color = colors[index];
+  const color = "#" + colors[index];
   const style = document.createElement("style");
   const theme = document.head.querySelector('meta[name="theme-color"]');
   style.textContent = ":root { --primary: " + color + "; }";
