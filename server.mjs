@@ -195,21 +195,25 @@ async function editArticle(urlPath, suggestion) {
     r.on("end", () => {
       const text = Buffer.concat(chunks).toString("utf8");
       const filePath = getCachePath(urlPath);
-      const stream = createWriteStream(filePath, "utf8");
-      stream.write(text);
-      stream.end();
+      log("Update article %s", urlPath);
+      log(text);
+
+      writeFileSync(filePath, text);
     });
   });
 
-  remote.write(
-    JSON.stringify({
+  const payload = JSON.stringify(
+    {
       model: "text-davinci-edit-001",
       input: cachedText,
       instruction: suggestion,
-    })
+    },
+    null,
+    2
   );
 
-  remote.end();
+  log("edit payload: %s", payload);
+  remote.end(payload);
 }
 
 function createCompletionWithCache(urlPath) {
