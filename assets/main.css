@@ -29,7 +29,6 @@ body {
   display: block;
   width: 1.5rem;
   height: 1.5rem;
-  background-color: var(--primary);
   border-radius: 100%;
   animation: pulse 1s linear infinite;
 }
