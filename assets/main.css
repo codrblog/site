@@ -24,6 +24,22 @@ body {
   position: relative;
 }
 
+.spinner {
+  margin: 1rem auto;
+  display: block;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: var(--primary);
+  border-radius: 100%;
+  animation: pulse 1s linear infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0}
+  50% { opacity: 1 }
+  100% { opacity: 0 }
+}
+
 header {
   padding: var(--gap-2);
   position: absolute;

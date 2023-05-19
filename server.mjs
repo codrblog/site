@@ -48,30 +48,30 @@ function log(...args) {
 
 async function serve(req, res) {
   const parsedUrl = new URL(req.url, "http://localhost/");
-  const pathName = parsedUrl.pathname;
+  const urlPath = parsedUrl.pathname;
 
-  if (pathName === "/favicon.ico") {
+  if (urlPath === "/favicon.ico") {
     res.writeHead(404);
     res.end();
     return;
   }
 
-  if (pathName === "/manifest.json") {
+  if (urlPath === "/manifest.json") {
     res.end(manifest);
     return;
   }
 
-  if (assets.includes(pathName.slice(1))) {
+  if (assets.includes(urlPath.slice(1))) {
     readAsset(res, req.url.slice(1));
     return;
   }
 
-  if (pathName === "/" || !pathName.replace("/article/", "")) {
+  if (urlPath === "/" || !urlPath.replace("/article/", "")) {
     renderRandomArticle(res);
     return;
   }
 
-  if (pathName === "/sitemap.txt") {
+  if (urlPath === "/sitemap.txt") {
     const lines = readIndex();
     const domain = req.headers["x-forwarded-for"];
     const proto = req.headers["x-forwarded-proto"];
@@ -82,7 +82,7 @@ async function serve(req, res) {
     return;
   }
 
-  if (pathName === "/@index") {
+  if (urlPath === "/@index") {
     const lines = readIndex();
     const spacer = /_/g;
     const content =
@@ -105,7 +105,7 @@ async function serve(req, res) {
     return;
   }
 
-  if (pathName.startsWith("/@suggestion/")) {
+  if (urlPath.startsWith("/@suggestion/")) {
     if (!useCache) {
       res.writeHead(201);
       res.end();
@@ -113,7 +113,7 @@ async function serve(req, res) {
     }
 
     const suggestion = await readBody(req);
-    const suggestionPath = pathName.replace("/@suggestion", "");
+    const suggestionPath = urlPath.replace("/@suggestion", "");
 
     if (!suggestionPath || !isCached(suggestionPath)) {
       res.writeHead(400);
@@ -138,13 +138,13 @@ async function serve(req, res) {
     return;
   }
 
-  if (!pathName.startsWith("/article/")) {
+  if (!urlPath.startsWith("/article/")) {
     res.writeHead(404);
     res.end();
     return;
   }
 
-  streamContent(res, pathName);
+  streamContent(res, urlPath);
 }
 
 function readAsset(res, path) {
