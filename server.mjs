@@ -71,7 +71,7 @@ async function serve(req, res) {
     return;
   }
 
-  if (pathname === "/sitemap.txt") {
+  if (pathName === "/sitemap.txt") {
     const lines = readIndex();
     const domain = req.headers["x-forwarded-for"];
     const proto = req.headers["x-forwarded-proto"];
