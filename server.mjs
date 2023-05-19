@@ -161,13 +161,13 @@ async function readBody(stream) {
   });
 }
 
-async function streamContent(res, urlPath) {
+function streamContent(res, urlPath) {
   res.writeHead(200, { "content-type": "text/html" });
   res.write(indexParts[0]);
 
   if (useCache && isCached(urlPath)) {
     log("from cache: %s", urlPath);
-    res.write(await readFromCache(urlPath));
+    res.write(readFromCache(urlPath));
     res.write(indexParts[1]);
     res.end();
     return;
@@ -190,8 +190,8 @@ async function streamContent(res, urlPath) {
   });
 }
 
-async function editArticle(urlPath, suggestion) {
-  const cachedText = await readFromCache(urlPath);
+function editArticle(urlPath, suggestion) {
+  const cachedText = readFromCache(urlPath);
   const remote = request("https://api.openai.com/v1/edits", {
     method: "POST",
     headers: {
@@ -200,20 +200,16 @@ async function editArticle(urlPath, suggestion) {
     },
   });
 
-  remote.on("response", (r) => {
-    const chunks = [];
-    r.on("data", (c) => chunks.push(c));
-    r.on("end", () => {
-      const text = Buffer.concat(chunks).toString("utf8");
-      const filePath = getCachePath(urlPath);
-      const body = JSON.parse(text);
-      const newArticle = body.choices[0].text;
+  remote.on("response", async (response) => {
+    const text = await readBody(response);
+    const filePath = getCachePath(urlPath);
+    const body = JSON.parse(text);
+    const newArticle = body.choices[0].text;
 
-      log("Update article %s", urlPath);
-      log(newArticle);
+    log("Update article %s", urlPath);
+    log(newArticle);
 
-      writeFileSync(filePath, newArticle);
-    });
+    writeFileSync(filePath, newArticle);
   });
 
   const payload = JSON.stringify(
@@ -248,25 +244,21 @@ function createCompletionWithCache(urlPath) {
   return stream;
 }
 
-async function renderAndUpdateCache(urlPath) {
+function renderAndUpdateCache(urlPath) {
   const remote = request("https://markdown.jsfn.run?html=1", {
     method: "POST",
   });
 
-  remote.on("response", (s) => {
-    if (s.statusCode !== 200) {
+  remote.on("response", async (response) => {
+    if (response.statusCode !== 200) {
       return;
     }
 
-    const chunks = [];
-    s.on("data", (data) => chunks.push(data));
-    s.on("end", () => {
-      const html = Buffer.concat(chunks).toString("utf8");
-      writeFileSync(getCachePath(urlPath), html + htmlMarker);
-    });
+    const html = await readBody(response);
+    writeFileSync(getCachePath(urlPath), html + htmlMarker);
   });
 
-  const cacheContent = await readFromCache(urlPath);
+  const cacheContent = readFromCache(urlPath);
   remote.write(cacheContent);
   remote.end();
 }
@@ -365,21 +357,19 @@ function removeFromCache(url) {
 
 const htmlMarker = "<!-- html ready -->";
 
-async function readFromCache(url) {
+function readFromCache(url) {
   const filePath = getCachePath(url);
   const content = readFileSync(filePath, "utf8");
-  return content.replace(/^<\!--.+?-->/, "");
+  return content.slice(content.indexOf("\n\n"));
 }
 
-async function renderRandomArticle(res) {
+function renderRandomArticle(res) {
   const index = readIndex();
   const id = Math.floor(Math.random() * index.length) % index.length;
-  const content = await readFromCache(index[id]);
-  const href = parseArticleLinkComment(content.replace(htmlMarker, ""));
-  const footerLink = `\n\n<a href="${href}">Go to article</a>`;
+  const content = readFromCache(index[id]);
 
   res.writeHead(200, { "Content-Type": "text/html" });
-  res.end(indexParts.join(content.replace(/^<\!--.+?-->/g, "") + footerLink));
+  res.end(indexParts.join(content.replace(/^<\!--.+?-->/g, "")));
 }
 
 let cachedIndex = [];
