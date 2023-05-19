@@ -409,8 +409,9 @@ function readIndex() {
 function parseArticleLinkComment(text) {
   const start = text.indexOf("<!--");
   const end = text.indexOf("-->");
+  const link = text.slice(start + 4, end).trim();
 
-  return text.slice(start + 4, end).trim();
+  return link.replace("//", "/");
 }
 
 function sha256(value) {
