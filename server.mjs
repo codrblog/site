@@ -207,9 +207,9 @@ function editArticle(urlPath, suggestion) {
     const newArticle = body.choices[0].text;
 
     log("Update article %s", urlPath);
-    log(newArticle);
+    log(body);
 
-    writeFileSync(filePath, newArticle);
+    // writeFileSync(filePath, newArticle);
   });
 
   const payload = JSON.stringify(
