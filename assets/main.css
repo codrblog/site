@@ -35,6 +35,7 @@ body {
   height: 1.5rem;
   border-radius: 100%;
   animation: pulse 1s linear infinite;
+  background-color: var(--primary);
 }
 
 @keyframes pulse {

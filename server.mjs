@@ -83,10 +83,11 @@ async function serve(req, res) {
   }
 
   if (urlPath === "/@index") {
+    updateIndex();
     const lines = readIndex();
     const spacer = /_/g;
     const content =
-      "<!-- html ready --><h1>Index</h1><nav><ul>" +
+      "<h1>Index</h1><nav><ul>" +
       lines
         .map(
           (line) =>
@@ -95,7 +96,7 @@ async function serve(req, res) {
               .replace("/article/", "")}</a></li>`
         )
         .join("") +
-      "</ul></nav>";
+      "</ul></nav><!-- html ready -->";
 
     res.writeHead(200, { "Content-Type": "text/html" });
     res.write(indexParts[0]);
