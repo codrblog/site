@@ -57,7 +57,6 @@ async function serve(req, res) {
   }
 
   if (pathName === "/manifest.json") {
-    res.writeHead(200);
     res.end(manifest);
     return;
   }
@@ -72,13 +71,23 @@ async function serve(req, res) {
     return;
   }
 
+  if (pathname === "/sitemap.txt") {
+    const lines = readIndex();
+    const domain = req.headers["x-forwarded-for"];
+    const proto = req.headers["x-forwarded-proto"];
+    const baseUrl = `${proto}://${domain}`;
+
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end(lines.map((path) => baseUrl + path).join("\n"));
+    return;
+  }
+
   if (pathName === "/@index") {
-    const lines = readIndex().sort();
+    const lines = readIndex();
     const spacer = /_/g;
     const content =
       "<!-- html ready --><h1>Index</h1><nav><ul>" +
       lines
-        .filter(Boolean)
         .map(
           (line) =>
             `<li><a href="${line}">${line
@@ -152,7 +161,7 @@ async function readBody(stream) {
 }
 
 async function streamContent(res, urlPath) {
-  res.writeHead(200);
+  res.writeHead(200, { "content-type": "text/html" });
   res.write(indexParts[0]);
 
   if (useCache && isCached(urlPath)) {
@@ -176,6 +185,7 @@ async function streamContent(res, urlPath) {
   stream.on("end", () => {
     res.write(buffer.join(""));
     res.end(indexParts[1]);
+    updateIndex();
   });
 }
 
@@ -260,13 +270,11 @@ async function renderAndUpdateCache(urlPath) {
   remote.end();
 }
 
-function createCompletionRequest(urlPath, suggestion) {
-  const prompt =
-    promptText.replace("{urlPath}", urlPath.replace("/article/", "")) +
-    (suggestion
-      ? "Consider this suggestion for an improved content: " +
-        suggestion.slice(0, 255)
-      : "");
+function createCompletionRequest(urlPath) {
+  const prompt = promptText.replace(
+    "{urlPath}",
+    urlPath.replace("/article/", "")
+  );
 
   const body = {
     model,
@@ -362,21 +370,19 @@ async function readFromCache(url) {
   return content.replace(/^<\!--.+?-->/, "");
 }
 
-function renderRandomArticle(res) {
-  const cacheFiles = readdirSync(join(CWD, "cache"));
-  const index =
-    Math.floor(Math.random() * cacheFiles.length) % cacheFiles.length;
-  const filePath = join(CWD, "cache", cacheFiles[index]);
-  const content = readFileSync(filePath, "utf8");
-  const html = content.replace(htmlMarker, "");
-  const href = parseArticleLinkComment(content);
-  const footerLink = `\n\nLink: <a href="${href}">${href}</a>`;
+async function renderRandomArticle(res) {
+  const index = readIndex();
+  const id = Math.floor(Math.random() * index.length) % index.length;
+  const content = await readFromCache(index[id]);
+  const href = parseArticleLinkComment(content.replace(htmlMarker, ""));
+  const footerLink = `\n\n<a href="${href}">Go to article</a>`;
 
   res.writeHead(200, { "Content-Type": "text/html" });
   res.end(indexParts.join(html.replace(/^<\!--.+?-->/g, "") + footerLink));
 }
 
-function readIndex() {
+let cachedIndex = [];
+function updateIndex() {
   const cacheFiles = readdirSync(join(CWD, "cache"));
   const headers = cacheFiles
     .map((file) =>
@@ -385,12 +391,19 @@ function readIndex() {
     .map((sh) => String(sh.stdout || sh.output))
     .join("\n");
 
-  const lines = headers
+  cachedIndex = headers
     .split("\n")
     .filter((s) => Boolean(s.trim()) && s.startsWith("<!--"))
-    .map(parseArticleLinkComment);
+    .map(parseArticleLinkComment)
+    .filter(Boolean);
+}
 
-  return lines;
+function readIndex() {
+  if (!cachedIndex.length) {
+    updateIndex();
+  }
+
+  return cachedIndex;
 }
 
 function parseArticleLinkComment(text) {
