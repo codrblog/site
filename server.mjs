@@ -204,12 +204,14 @@ function editArticle(urlPath, suggestion) {
     const text = await readBody(response);
     const filePath = getCachePath(urlPath);
     const body = JSON.parse(text);
-    const newArticle = body.choices[0].text;
+    const newArticle = body.choices[0].text.trim();
 
     log("Update article %s", urlPath);
-    log(body);
+    log(newArticle);
 
-    // writeFileSync(filePath, newArticle);
+    if (newArticle) {
+      writeFileSync(filePath, newArticle);
+    }
   });
 
   const payload = JSON.stringify(
