@@ -172,7 +172,7 @@ async function streamContent(res, urlPath) {
     return;
   }
 
-  const stream = createCompletionWithCache(urlPath, "");
+  const stream = createCompletionWithCache(urlPath);
   const buffer = [];
   stream.on("data", (next) => {
     buffer.push(next);
@@ -378,7 +378,7 @@ async function renderRandomArticle(res) {
   const footerLink = `\n\n<a href="${href}">Go to article</a>`;
 
   res.writeHead(200, { "Content-Type": "text/html" });
-  res.end(indexParts.join(html.replace(/^<\!--.+?-->/g, "") + footerLink));
+  res.end(indexParts.join(content.replace(/^<\!--.+?-->/g, "") + footerLink));
 }
 
 let cachedIndex = [];
