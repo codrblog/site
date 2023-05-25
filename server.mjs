@@ -23,6 +23,7 @@ const useCache = !Boolean(process.env.NO_CACHE);
 const useStream = Boolean(process.env.API_STREAM);
 const prefix = process.env.PROMPT_PREFIX || "";
 const appName = String(process.env.APP_NAME);
+const htmlMarker = "<!-- html ready -->";
 const contentMarker = "<!--%content%-->";
 const manifest = readFileSync("./assets/manifest.json", "utf-8").replace(
   "{name}",
@@ -204,14 +205,20 @@ function editArticle(urlPath, suggestion) {
     const text = await readBody(response);
     const filePath = getCachePath(urlPath);
     const body = JSON.parse(text);
-    const newArticle = body.choices[0].text.trim();
+    let newArticle = body.choices[0].text.trim();
 
     log("Update article %s", urlPath);
     log(newArticle);
 
-    if (newArticle) {
-      writeFileSync(filePath, newArticle);
+    if (!newArticle) {
+      return;
     }
+
+    if (!newArticle.includes(urlPath)) {
+      newArticle = createUrlHeader(urlPath) + newArticle;
+    }
+
+    writeFileSync(filePath, newArticle);
   });
 
   const payload = JSON.stringify(
@@ -234,7 +241,7 @@ function createCompletionWithCache(urlPath) {
 
   if (useCache) {
     const fileHandle = createWriteStream(filePath);
-    fileHandle.write(`<!-- ${urlPath} -->\n\n`);
+    fileHandle.write(createUrlHeader(urlPath));
 
     stream.on("data", (next) => fileHandle.write(next));
     stream.on("end", () => {
@@ -244,6 +251,10 @@ function createCompletionWithCache(urlPath) {
   }
 
   return stream;
+}
+
+function createUrlHeader(urlPath) {
+  return `<!-- ${urlPath} -->\n\n`;
 }
 
 function renderAndUpdateCache(urlPath) {
@@ -256,7 +267,13 @@ function renderAndUpdateCache(urlPath) {
       return;
     }
 
-    const html = await readBody(response);
+    const header = createUrlHeader(urlPath);
+    let html = await readBody(response);
+
+    if (!html.includes(header)) {
+      html = header + html;
+    }
+
     writeFileSync(getCachePath(urlPath), html + htmlMarker);
   });
 
@@ -356,8 +373,6 @@ function removeFromCache(url) {
     unlinkSync(filePath);
   }
 }
-
-const htmlMarker = "<!-- html ready -->";
 
 function readFromCache(url) {
   const filePath = getCachePath(url);
