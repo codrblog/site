@@ -83,8 +83,7 @@ async function serve(req, res) {
   }
 
   if (urlPath === "/@index") {
-    updateIndex();
-    const lines = readIndex();
+    const lines = updateIndex();
     const spacer = /_/g;
     const content =
       "<h1>Index</h1><nav><ul>" +
@@ -391,11 +390,13 @@ function updateIndex() {
     .filter((s) => Boolean(s.trim()) && s.startsWith("<!--"))
     .map(parseArticleLinkComment)
     .filter(Boolean);
+
+  return cachedIndex;
 }
 
 function readIndex() {
   if (!cachedIndex.length) {
-    updateIndex();
+    return updateIndex();
   }
 
   return cachedIndex;
