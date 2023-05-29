@@ -1,3 +1,5 @@
+import { toHTML } from 'https://markdown.jsfn.run/index.mjs';
+
 function onSearch(event) {
   event.preventDefault();
   const query = event.target.querySelector("input").value;
@@ -81,24 +83,16 @@ async function updateArticleContent(article) {
     return;
   }
 
-  const response = await fetch("https://markdown.jsfn.run?html=1", {
-    method: "POST",
-    mode: "cors",
-    body: content.trim(),
-  });
+  try {
+    const html = await toHTML(content.trim());
+    const tpl = document.createElement("template");
+    tpl.innerHTML = html;
+    tpl.content.querySelectorAll("script,style,link").forEach((t) => t.remove());
 
-  if (!response.ok) {
-    return;
-  }
-
-  const html = await response.text();
-  const tpl = document.createElement("template");
-  tpl.innerHTML = html;
-  tpl.content.querySelectorAll("script,style,link").forEach((t) => t.remove());
-
-  article.innerHTML = "";
-  article.classList.remove("text-only");
-  article.append(tpl.content.cloneNode(true));
+    article.innerHTML = "";
+    article.classList.remove("text-only");
+    article.append(tpl.content.cloneNode(true));
+  } catch {}
 }
 
 function updatePageTitle(article) {
