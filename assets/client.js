@@ -142,10 +142,13 @@ function linkHeadingsToArticles(article) {
   [...article.querySelectorAll("h2, h3, h4, h5, h6")].forEach((heading) => {
     const text = heading.textContent.trim();
 
-    if (ignoredTitles.includes(text.toLowerCase())) return;
+    if (ignoredTitles.includes(text.toLowerCase())) {
+      return;
+    }
 
+    const pageTitle = article.querySelector("h1")?.textContent.trim() || '';
     const link = document.createElement("a");
-    link.href = getArticleUrl(text);
+    link.href = getArticleUrl([pageTitle, text].join(': '));
     link.innerText = text;
     link.title = "Read more about " + text;
     heading.innerHTML = "";
