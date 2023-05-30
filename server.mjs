@@ -79,7 +79,7 @@ async function serve(req, res) {
     const baseUrl = `${proto}://${domain}`;
 
     res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end(lines.map((path) => baseUrl + path).join("\n"));
+    res.end(lines.map(({ url }) => String(new URL(url, baseUrl))).join("\n"));
     return;
   }
 
@@ -383,28 +383,34 @@ function readFromCache(url) {
 function renderRandomArticle(res) {
   const index = readIndex();
   const id = Math.floor(Math.random() * index.length) % index.length;
-  const content = readFromCache(index[id]);
+  const content = readFromCache(index[id].url);
+  const contentAndFooter =
+    content.replace(/^<\!--.+?-->/g, "") +
+    "\n\n" +
+    `<a rel="bookmark" href="${index[id].url}">Link</a>`
 
-  res.writeHead(200, { "Content-Type": "text/html" });
-  res.end(indexParts.join(content.replace(/^<\!--.+?-->/g, "")));
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.write(indexParts[0]);
+    res.write(contentAndFooter);
+    res.write(indexParts[1]);
+    res.end();
 }
 
 let cachedIndex = [];
 
 function updateIndex() {
   const cacheFiles = readdirSync(join(CWD, "cache"));
-  const headers = cacheFiles
-    .map((file) =>
-      spawnSync("head", ["-n1", join(CWD, "cache", file)], { encoding: "utf8" })
-    )
-    .map((sh) => String(sh.stdout || sh.output))
-    .join("\n");
-
-  cachedIndex = headers
-    .split("\n")
-    .filter((s) => Boolean(s.trim()) && s.startsWith("<!--"))
-    .map(parseArticleLinkComment)
-    .filter(Boolean);
+  const headers = cacheFiles.map((file) => {
+    const sh = spawnSync("head", ["-n1", join(CWD, "cache", file)], {
+      encoding: "utf8",
+    });
+    const url = String(sh.stdout || sh.output)
+      .split("\n")
+      .filter((s) => Boolean(s.trim()) && s.startsWith("<!--"))
+      .map(parseArticleLinkComment)
+      .filter(Boolean);
+    return { file, url };
+  });
 
   return cachedIndex;
 }
