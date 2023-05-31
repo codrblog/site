@@ -400,10 +400,12 @@ let cachedIndex = [];
 
 function updateIndex() {
   const cacheFiles = readdirSync(join(CWD, "cache"));
-  const headers = cacheFiles.map((file) => {
+
+  cachedIndex = cacheFiles.map((file) => {
     const sh = spawnSync("head", ["-n1", join(CWD, "cache", file)], {
       encoding: "utf8",
     });
+
     const url = String(sh.stdout || sh.output)
       .split("\n")
       .filter((s) => Boolean(s.trim()) && s.startsWith("<!--"))
