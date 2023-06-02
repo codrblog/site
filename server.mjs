@@ -91,7 +91,7 @@ async function serve(req, res) {
       lines
         .map(
           (line) =>
-            `<li><a href="${line}">${line
+            `<li><a href="${line.url}">${line.url
               .replace(spacer, " ")
               .replace("/article/", "")}</a></li>`
         )
@@ -410,7 +410,7 @@ function updateIndex() {
       .split("\n")
       .filter((s) => Boolean(s.trim()) && s.startsWith("<!--"))
       .map(parseArticleLinkComment)
-      .filter(Boolean);
+      .filter(Boolean)[0];
     return { file, url };
   });
 
