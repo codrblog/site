@@ -1,4 +1,4 @@
-import { toHTML } from 'https://markdown.jsfn.run/index.mjs';
+import toHTML from 'https://markdown.jsfn.run/index.mjs';
 
 function onSearch(event) {
   event.preventDefault();
