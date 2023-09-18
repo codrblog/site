@@ -1,9 +1,9 @@
-import { EventEmitter } from "events";
-import { createServer } from "http";
-import { request } from "https";
-import { join } from "path";
-import { createHash } from "crypto";
-import { spawnSync } from "child_process";
+import { EventEmitter } from "node:events";
+import { createServer } from "node:http";
+import { request } from "node:https";
+import { join } from "node:path";
+import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
 import mime from "mime";
 import {
   readFileSync,
@@ -387,13 +387,13 @@ function renderRandomArticle(res) {
   const contentAndFooter =
     content.replace(/^<\!--.+?-->/g, "") +
     "\n\n" +
-    `<a rel="bookmark" href="${index[id].url}">Link</a>`
+    `<a rel="bookmark" href="${index[id].url}">Link</a>`;
 
-    res.writeHead(200, { "Content-Type": "text/html" });
-    res.write(indexParts[0]);
-    res.write(contentAndFooter);
-    res.write(indexParts[1]);
-    res.end();
+  res.writeHead(200, { "Content-Type": "text/html" });
+  res.write(indexParts[0]);
+  res.write(contentAndFooter);
+  res.write(indexParts[1]);
+  res.end();
 }
 
 let cachedIndex = [];
@@ -401,18 +401,27 @@ let cachedIndex = [];
 function updateIndex() {
   const cacheFiles = readdirSync(join(CWD, "cache"));
 
-  cachedIndex = cacheFiles.map((file) => {
-    const sh = spawnSync("head", ["-n1", join(CWD, "cache", file)], {
-      encoding: "utf8",
-    });
+  cachedIndex = cacheFiles
+    .map((file) => {
+      const filePath = join(CWD, "cache", file);
+      const sh = spawnSync("head", ["-n1", filePath], {
+        encoding: "utf8",
+      });
 
-    const url = String(sh.stdout || sh.output)
-      .split("\n")
-      .filter((s) => Boolean(s.trim()) && s.startsWith("<!--"))
-      .map(parseArticleLinkComment)
-      .filter(Boolean)[0];
-    return { file, url };
-  });
+      const url = String(sh.stdout || sh.output)
+        .split("\n")
+        .filter((s) => Boolean(s.trim()) && s.startsWith("<!--"))
+        .map(parseArticleLinkComment)
+        .filter(Boolean)[0];
+
+      if (!url) {
+        unlinkSync(filePath);
+        return null;
+      }
+
+      return { file, url };
+    })
+    .filter(Boolean);
 
   return cachedIndex;
 }
